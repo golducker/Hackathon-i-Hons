@@ -1,0 +1,39 @@
+# Hackathon Chat Demo
+
+FastAPI backend (Gemini API) + Vite/React frontend. Repo: golducker/Hackathon-i-Hons, branch `main`.
+
+## Cấu trúc
+- `backend/` — FastAPI, `main.py` là gốc, app tên `app`
+  - `GET /` → `{"status":"ok"}`
+  - `POST /api/chat` nhận `{"message":...}`, gọi Gemini qua `google-genai`, trả `{"reply":...}`, lỗi Gemini trả HTTP 502 (không crash)
+  - Model đang dùng: `gemini-flash-latest` — KHÔNG dùng `gemini-2.5-flash`, key hiện tại bị lỗi 404 "no longer available to new users" với model đó
+  - `.env` cần `GEMINI_API_KEY` (không commit, tự điền tay mỗi máy)
+  - venv riêng theo từng máy, không commit
+- `frontend/` — Vite + React
+  - `App.jsx`: input + nút Gửi + hiển thị reply, có loading/error state
+  - Gọi API qua `VITE_API_URL` (từ `.env`) + endpoint `/api/chat`
+  - `.env` cần `VITE_API_URL` (local: `http://localhost:8000`, không commit)
+  - `node_modules/` không commit, cần `npm install` mỗi máy
+
+## Chạy local
+```
+cd backend && ./venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
+cd frontend && npm run dev
+```
+
+## Deploy (Vercel)
+- 2 project Vercel cùng trỏ vào repo này: `hackathon-i-hons` và `hackathon-i-hons-msop` — chưa xác định rõ cái nào frontend/backend, cần check Settings → General → Root Directory.
+- Git Integration đã bật → push lên `main` tự deploy.
+- ⚠️ Deployment Protection (Vercel SSO) từng chặn request, gây lỗi "Failed to fetch" — cần tắt ở Settings → Deployment Protection cho project backend nếu gặp lại lỗi này.
+- Biến môi trường production (`VITE_API_URL`, `GEMINI_API_KEY`) cấu hình riêng trong Vercel Dashboard của từng project, không dùng file `.env` local.
+
+## Multi-machine workflow
+- Đang dùng đồng thời desktop (nhà) + laptop (mang đi thi), qua Antigravity trên laptop.
+- Rời máy nào → `git push` trước. Ngồi máy khác → `git pull` trước khi sửa.
+- `.env`, `venv/`, `node_modules/` không sync qua git — mỗi máy tự cài/điền lại 1 lần.
+- Extension Claude Code có bug đã biết trên Antigravity (lỗi PATH khi verify install) — nếu lỗi, dùng agent chat có sẵn của Antigravity, chọn model Claude trong Settings → Model.
+
+## Ngày thi
+- Đưa giám khảo URL Production Vercel (không có hash lạ trong domain), không đưa URL Preview.
+- Không push code sát giờ thi (tránh bản đang build dở).
+- Backend serverless có thể cold-start chậm vài giây ở lần gọi đầu — gọi thử trước khi demo.
