@@ -22,16 +22,14 @@ cd frontend && npm run dev
 ```
 
 ## Deploy (Vercel)
-- 2 project Vercel cùng trỏ vào repo này: `hackathon-i-hons` và `hackathon-i-hons-msop` — chưa xác định rõ cái nào frontend/backend, cần check Settings → General → Root Directory.
+- 2 project Vercel trỏ vào repo này: `hackathon-i-hons` và `hackathon-i-hons-msop`.
 - Git Integration đã bật → push lên `main` tự deploy.
-- ⚠️ Deployment Protection (Vercel SSO) từng chặn request, gây lỗi "Failed to fetch" — cần tắt ở Settings → Deployment Protection cho project backend nếu gặp lại lỗi này.
 - Biến môi trường production (`VITE_API_URL`, `GEMINI_API_KEY`) cấu hình riêng trong Vercel Dashboard của từng project, không dùng file `.env` local.
 
 ## Multi-machine workflow
-- Đang dùng đồng thời desktop (nhà) + laptop (mang đi thi), qua Antigravity trên laptop.
+- Làm việc trên 2 máy: desktop (nhà, VS Code) + laptop (mang đi thi, Antigravity).
 - Rời máy nào → `git push` trước. Ngồi máy khác → `git pull` trước khi sửa.
 - `.env`, `venv/`, `node_modules/` không sync qua git — mỗi máy tự cài/điền lại 1 lần.
-- Extension Claude Code có bug đã biết trên Antigravity (lỗi PATH khi verify install) — nếu lỗi, dùng agent chat có sẵn của Antigravity, chọn model Claude trong Settings → Model.
 
 ## Ngày thi
 - Đưa giám khảo URL Production Vercel (không có hash lạ trong domain), không đưa URL Preview.
