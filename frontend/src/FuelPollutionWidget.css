@@ -1,0 +1,259 @@
+.fpw {
+  --fpw-bg: #ffffff;
+  --fpw-card-bg: #ffffff;
+  --fpw-muted-bg: #f3f4f6;
+  --fpw-text: #1f2933;
+  --fpw-text-muted: #4b5563;
+  --fpw-border: #d1d5db;
+  --fpw-warn: #92400e;
+  --fpw-warn-bg: #fef3c7;
+  --fpw-ok: #14532d;
+  --fpw-ok-bg: #dcfce7;
+  --fpw-accent: #1d4ed8;
+
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 16px 40px;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  text-align: left;
+  color: var(--fpw-text);
+  background: var(--fpw-bg);
+  line-height: 1.55;
+}
+
+.fpw * {
+  box-sizing: border-box;
+}
+
+.fpw h1 {
+  font-size: 28px;
+  line-height: 1.3;
+  color: var(--fpw-text);
+  margin: 0 0 6px;
+  letter-spacing: normal;
+}
+
+.fpw h2 {
+  font-size: 20px;
+  color: var(--fpw-text);
+  margin: 0 0 12px;
+  letter-spacing: normal;
+}
+
+.fpw h3 {
+  font-size: 16px;
+  color: var(--fpw-text);
+  margin: 0 0 10px;
+}
+
+.fpw p {
+  margin: 0;
+}
+
+.fpw .subtitle {
+  color: var(--fpw-text-muted);
+  margin: 0 0 20px;
+}
+
+.fpw table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fpw thead th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 2px solid var(--fpw-border);
+  color: var(--fpw-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.fpw tbody td {
+  padding: 8px;
+  border-bottom: 1px solid var(--fpw-border);
+  vertical-align: middle;
+}
+
+.fpw select,
+.fpw input[type='number'] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--fpw-border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--fpw-text);
+  font-size: 14px;
+}
+
+.fpw .remove-btn {
+  border: 1px solid var(--fpw-border);
+  background: #fff;
+  color: var(--fpw-text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.fpw .remove-btn:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.fpw .toolbar {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.fpw button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.fpw .btn-secondary {
+  padding: 10px 16px;
+  border: 1px solid var(--fpw-border);
+  background: #fff;
+  color: var(--fpw-text);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.fpw .btn-primary {
+  padding: 10px 16px;
+  border: 1px solid var(--fpw-accent);
+  background: var(--fpw-accent);
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fpw .btn-commit {
+  padding: 12px 20px;
+  border: none;
+  background: #15803d;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.fpw .btn-fund {
+  padding: 10px 16px;
+  border: 1px solid var(--fpw-border);
+  background: #fff;
+  color: var(--fpw-text);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.fpw .results-card {
+  margin-top: 28px;
+  padding: 18px;
+  border: 1px solid var(--fpw-border);
+  border-radius: 10px;
+  background: var(--fpw-card-bg);
+}
+
+.fpw .row-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fpw .row-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--fpw-border);
+}
+
+.fpw .row-list li:last-child {
+  border-bottom: none;
+}
+
+.fpw .row-head {
+  color: var(--fpw-text);
+  font-weight: 600;
+}
+
+.fpw .row-detail {
+  margin-top: 6px;
+  color: var(--fpw-text);
+}
+
+.fpw .row-warn {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--fpw-warn-bg);
+  color: var(--fpw-warn);
+  font-size: 13px;
+  display: inline-block;
+}
+
+.fpw .totals {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--fpw-border);
+  font-size: 17px;
+  color: var(--fpw-text);
+}
+
+.fpw .section {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--fpw-border);
+}
+
+.fpw .behavior-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--fpw-text);
+}
+
+.fpw .behavior-row input[type='number'] {
+  width: 70px;
+  display: inline-block;
+}
+
+.fpw .behavior-result {
+  margin-top: 10px;
+  color: var(--fpw-text);
+}
+
+.fpw .actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fpw .action-msg {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--fpw-ok-bg);
+  color: var(--fpw-ok);
+  font-size: 13px;
+}
+
+.fpw .assumptions {
+  margin-top: 24px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--fpw-muted-bg);
+  color: var(--fpw-text);
+  font-size: 13px;
+}
+
+.fpw .assumptions ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.fpw .assumptions li {
+  margin-bottom: 4px;
+}
