@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import './FuelPollutionWidget.css'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 // Giá xăng E5 RON92, cập nhật ngày 6/8/2026 — giá theo ngày, sẽ thay đổi.
 const GASOLINE_PRICE_PER_LITER = 21720
 // Mức tiêu thụ ước lượng trung bình đô thị Hà Nội.
@@ -20,18 +22,6 @@ const PERIODS = [
   { value: 'tuan', label: 'Tuần' },
   { value: 'thang', label: 'Tháng' },
 ]
-
-// Dữ liệu mô phỏng — KHÔNG phải tuyến xe buýt thật, chỉ để minh họa logic gợi ý cá nhân hóa.
-const MOCK_AREAS = {
-  'Cầu Giấy': [
-    { ten: 'Tuyến 09', mo_ta: 'Cầu Giấy - Bờ Hồ', do_phu: 3 },
-    { ten: 'Tuyến 34', mo_ta: 'Cầu Giấy - Mỹ Đình', do_phu: 2 },
-  ],
-  'Đống Đa': [{ ten: 'Tuyến 25', mo_ta: 'Đống Đa - Giáp Bát', do_phu: 3 }],
-  'Hai Bà Trưng': [{ ten: 'Tuyến 08', mo_ta: 'Hai Bà Trưng - Long Biên', do_phu: 2 }],
-  'Long Biên': [{ ten: 'Tuyến 17', mo_ta: 'Long Biên - Nội Bài', do_phu: 1 }],
-  'Hà Đông': [{ ten: 'Tuyến 01 (BRT)', mo_ta: 'Yên Nghĩa - Kim Mã', do_phu: 3 }],
-}
 
 let nextId = 2
 
@@ -61,11 +51,12 @@ export default function FuelPollutionWidget() {
   const [rows, setRows] = useState([{ id: 1, fuelType: 'xang', amount: '', period: 'thang' }])
   const [results, setResults] = useState(null)
 
-  // Bước 3 — gợi ý cá nhân hóa
-  const areaKeys = Object.keys(MOCK_AREAS)
-  const [destination, setDestination] = useState('')
-  const [selectedArea, setSelectedArea] = useState(areaKeys[0])
-  const [tripDistance, setTripDistance] = useState('3')
+  // Bước 3 — gợi ý cá nhân hóa (Gemini ước tính khoảng cách + phương án từ 2 địa chỉ)
+  const [homeAddress, setHomeAddress] = useState('')
+  const [destinationAddress, setDestinationAddress] = useState('')
+  const [routeLoading, setRouteLoading] = useState(false)
+  const [routeError, setRouteError] = useState('')
+  const [routeSuggestion, setRouteSuggestion] = useState(null)
   const [ranking, setRanking] = useState(null)
   const [selectedOptionKey, setSelectedOptionKey] = useState(null)
   const [appliedOption, setAppliedOption] = useState(null)
@@ -78,6 +69,8 @@ export default function FuelPollutionWidget() {
   const [fundMsg, setFundMsg] = useState('')
 
   const resetDownstream = () => {
+    setRouteSuggestion(null)
+    setRouteError('')
     setRanking(null)
     setSelectedOptionKey(null)
     setAppliedOption(null)
@@ -136,27 +129,9 @@ export default function FuelPollutionWidget() {
     return results.perRow.filter((r) => r.supported).reduce((sum, r) => sum + r.amountNum, 0)
   }, [results])
 
-  const handleRank = () => {
-    const candidates = []
-    const d = Number(tripDistance)
-    if (d > 0 && d <= 5) {
-      candidates.push({
-        key: 'walk_bike',
-        name: 'Đi bộ / xe đạp cho chuyến ngắn',
-        pct: 40 - (d / 5) * 30,
-        feas: 3 - (d / 5) * 2,
-      })
-    }
-    ;(MOCK_AREAS[selectedArea] ?? []).forEach((route) => {
-      candidates.push({
-        key: route.ten,
-        name: `${route.ten} (${route.mo_ta})`,
-        pct: 15 + route.do_phu * 10,
-        feas: route.do_phu,
-      })
-    })
-    candidates.push({ key: 'keep_moto', name: 'Giữ nguyên xe máy', pct: 0, feas: 4 })
-
+  // Xếp hạng phương án từ danh sách candidate (do Gemini gợi ý + "Giữ nguyên xe máy" baseline).
+  // Công thức điểm giữ nguyên không đổi: điểm = %đổi được chuẩn hóa × trọng số + độ khả thi chuẩn hóa × (1 - trọng số).
+  const rankCandidates = (candidates) => {
     const pctVals = candidates.map((c) => c.pct)
     const feasVals = candidates.map((c) => c.feas)
     const pctMin = Math.min(...pctVals)
@@ -171,12 +146,48 @@ export default function FuelPollutionWidget() {
       return { ...c, pctNorm, feasNorm, score }
     })
     scored.sort((a, b) => b.score - a.score)
+    return scored
+  }
 
-    setRanking(scored)
-    setSelectedOptionKey(scored[0]?.key ?? null)
+  const handleFindRoutes = async () => {
+    if (!homeAddress.trim() || !destinationAddress.trim()) return
+    setRouteLoading(true)
+    setRouteError('')
+    setRouteSuggestion(null)
+    setRanking(null)
     setAppliedOption(null)
     setNextWeekAmount('')
     setConfirmResult(null)
+
+    try {
+      const res = await fetch(`${API_URL}/api/route-suggest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ home_address: homeAddress, destination_address: destinationAddress }),
+      })
+      if (!res.ok) {
+        throw new Error(`Server trả về lỗi: ${res.status}`)
+      }
+      const data = await res.json()
+      setRouteSuggestion(data)
+
+      const candidates = data.options.map((opt) => ({
+        key: opt.name,
+        name: opt.name,
+        description: opt.description,
+        pct: opt.pct,
+        feas: opt.feas,
+      }))
+      candidates.push({ key: 'keep_moto', name: 'Giữ nguyên xe máy', description: '', pct: 0, feas: 4 })
+
+      const scored = rankCandidates(candidates)
+      setRanking(scored)
+      setSelectedOptionKey(scored[0]?.key ?? null)
+    } catch (err) {
+      setRouteError(`Không lấy được gợi ý từ Gemini: ${err.message}`)
+    } finally {
+      setRouteLoading(false)
+    }
   }
 
   const handleApplyOption = () => {
@@ -306,42 +317,36 @@ export default function FuelPollutionWidget() {
             </div>
           ) : (
             <>
-              {/* Bước 3 — minh họa lớp AI xếp hạng phương án cá nhân hóa */}
+              {/* Bước 3 — minh họa lớp AI xếp hạng phương án cá nhân hóa, dữ liệu do Gemini ước tính */}
               <div className="section">
                 <h3>Bước 3 — Gợi ý cá nhân hóa</h3>
                 <p className="step-note">
-                  Xếp hạng phương án thay thế dựa trên nhiều yếu tố (khu vực, quãng đường mỗi chuyến, tần suất đi lại) — không phải
-                  một mức % chọn tùy ý.
+                  Nhập địa chỉ nhà và điểm đến hàng ngày — Gemini ước tính quãng đường và gợi ý phương án di chuyển xanh hơn, sau đó
+                  hệ thống xếp hạng theo nhiều yếu tố (không phải một mức % chọn tùy ý).
+                </p>
+                <p className="caption">
+                  Đây là ước tính của Gemini dựa trên kiến thức đã huấn luyện, chưa tra cứu Google Maps trực tiếp — khoảng cách và
+                  tên tuyến có thể không chính xác 100%, chỉ dùng để minh họa logic gợi ý cá nhân hóa.
                 </p>
 
                 <div className="field-row">
-                  <label htmlFor="fpw-dest">Điểm đến hàng ngày của bạn (ví dụ: trường học, công ty)</label>
+                  <label htmlFor="fpw-home">Địa chỉ nhà</label>
                   <input
-                    id="fpw-dest"
+                    id="fpw-home"
                     type="text"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    placeholder="VD: Công ty ABC, quận Cầu Giấy"
+                    value={homeAddress}
+                    onChange={(e) => setHomeAddress(e.target.value)}
+                    placeholder="VD: Ngõ 121 Chùa Láng, Đống Đa, Hà Nội"
                   />
                 </div>
                 <div className="field-row">
-                  <label htmlFor="fpw-area">Khu vực gần điểm đến</label>
-                  <select id="fpw-area" value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
-                    {areaKeys.map((k) => (
-                      <option key={k} value={k}>
-                        {k}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field-row">
-                  <label htmlFor="fpw-trip">Quãng đường trung bình mỗi chuyến (km)</label>
+                  <label htmlFor="fpw-dest">Điểm đến hàng ngày (trường học/công ty)</label>
                   <input
-                    id="fpw-trip"
-                    type="number"
-                    min="0"
-                    value={tripDistance}
-                    onChange={(e) => setTripDistance(e.target.value)}
+                    id="fpw-dest"
+                    type="text"
+                    value={destinationAddress}
+                    onChange={(e) => setDestinationAddress(e.target.value)}
+                    placeholder="VD: Đại học Bách Khoa Hà Nội"
                   />
                 </div>
                 <p className="weight-note">
@@ -352,22 +357,27 @@ export default function FuelPollutionWidget() {
                 </p>
 
                 <div className="toolbar">
-                  <button className="btn-secondary" onClick={handleRank}>
-                    Xếp hạng phương án
+                  <button
+                    className="btn-secondary"
+                    onClick={handleFindRoutes}
+                    disabled={routeLoading || !homeAddress.trim() || !destinationAddress.trim()}
+                  >
+                    {routeLoading ? 'Đang hỏi Gemini...' : 'Tìm phương án di chuyển xanh'}
                   </button>
                 </div>
 
-                {ranking && (
+                {routeError && <div className="fail-box">{routeError}</div>}
+
+                {ranking && routeSuggestion && (
                   <>
                     <p className="step-note">
-                      Với quãng đường từ nhà đến{' '}
-                      <strong>{destination.trim() ? destination.trim() : '(điểm đến chưa đặt tên)'}</strong>, các phương án phù hợp
+                      Với quãng đường ước tính <strong>{fmt(routeSuggestion.distance_km, 1)} km</strong> từ{' '}
+                      <strong>{homeAddress.trim()}</strong> đến <strong>{destinationAddress.trim()}</strong>, các phương án phù hợp
                       nhất là:
                     </p>
                     {ranking.length === 1 && (
                       <div className="muted-note">
-                        Chưa có phương án thay thế nào phù hợp (quãng đường mỗi chuyến {'>'} 5km hoặc khu vực chưa có tuyến buýt mô
-                        phỏng) — chỉ còn "Giữ nguyên xe máy".
+                        Gemini không đề xuất phương án thay thế nào phù hợp cho quãng đường này — chỉ còn "Giữ nguyên xe máy".
                       </div>
                     )}
                     <table>
@@ -391,7 +401,10 @@ export default function FuelPollutionWidget() {
                                 onChange={() => setSelectedOptionKey(c.key)}
                               />
                             </td>
-                            <td>{c.name}</td>
+                            <td>
+                              {c.name}
+                              {c.description && <div className="option-desc">{c.description}</div>}
+                            </td>
                             <td>{fmt(c.pct, 0)}%</td>
                             <td>{fmt(c.feas, 1)}</td>
                             <td>{fmt(c.score, 3)}</td>
@@ -511,7 +524,11 @@ export default function FuelPollutionWidget() {
           <li>Giá xăng E5 RON92 = {fmt(GASOLINE_PRICE_PER_LITER)} đ/lít, cập nhật ngày 6/8/2026 — giá thay đổi theo ngày.</li>
           <li>Mức tiêu thụ {KM_PER_LITER} km/lít là ước lượng trung bình đô thị Hà Nội, không phải số đo trên xe cụ thể.</li>
           <li>Hệ số phát thải {PM25_G_PER_KM} g PM2.5/km lấy từ một nghiên cứu đo thực địa tại Hà Nội, chưa đo trực tiếp trên xe của người dùng.</li>
-          <li>Danh sách tuyến xe buýt theo khu vực (Bước 3) là dữ liệu mô phỏng để minh họa logic gợi ý, chưa phải dữ liệu vận tải công cộng thật.</li>
+          <li>
+            Khoảng cách và phương án di chuyển ở Bước 3 do Gemini ước tính từ kiến thức đã huấn luyện, KHÔNG tra cứu Google Maps
+            trực tiếp (tool grounding Maps của Gemini chỉ chạy qua Vertex AI, không hỗ trợ trên Gemini Developer API đang dùng) —
+            tên tuyến/khoảng cách có thể sai lệch so với thực tế.
+          </li>
           <li>
             Xác nhận đổi hành vi (Bước 4) trong bản demo này dựa trên thay đổi chi tiêu xăng khai báo tay, không phải dữ liệu thật;
             bản sản xuất cần cân nhắc thêm cách xác thực chống gian lận (ví dụ người dùng khai giảm chi tiêu nhưng thực ra đổi sang

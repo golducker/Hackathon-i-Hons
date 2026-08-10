@@ -234,6 +234,12 @@
   width: 220px;
 }
 
+.fpw .option-desc {
+  margin-top: 3px;
+  color: var(--fpw-text-muted);
+  font-size: 12.5px;
+}
+
 .fpw .caption {
   margin-top: 10px;
   color: var(--fpw-text-muted);
