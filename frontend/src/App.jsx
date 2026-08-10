@@ -38,7 +38,7 @@ function App() {
 
   return (
     <div style={{ maxWidth: 600, margin: '40px auto', padding: '0 16px', fontFamily: 'sans-serif' }}>
-      <h1>Hackathon Chat Demo</h1>
+      <h1>Du Bist Gut Genug</h1>
       <div style={{ display: 'flex', gap: 8 }}>
         <input
           type="text"
