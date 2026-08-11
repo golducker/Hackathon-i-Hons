@@ -21,6 +21,9 @@ cd backend && ./venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
 cd frontend && npm run dev
 ```
 
+## Quy tắc cho Claude khi sửa code
+- Sau mỗi lần sửa code hoặc thêm tính năng mới, đảm bảo backend (port 8000) và frontend (port 5173) đang chạy (khởi động lại nếu cần — backend đổi code phải restart nếu không chạy `--reload`), rồi tự động trả ra link `http://localhost:5173` để user test ngay, không cần user phải hỏi lại.
+
 ## Deploy (Vercel)
 - 2 project Vercel trỏ vào repo này: `hackathon-i-hons` và `hackathon-i-hons-msop`.
 - Git Integration đã bật → push lên `main` tự deploy.
