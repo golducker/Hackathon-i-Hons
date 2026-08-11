@@ -1,8 +1,8 @@
 import './App.css'
-import FuelPollutionWidget from './FuelPollutionWidget'
+import GreenCommuteWidget from './GreenCommuteWidget'
 
 function App() {
-  return <FuelPollutionWidget />
+  return <GreenCommuteWidget />
 }
 
 export default App
