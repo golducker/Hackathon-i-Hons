@@ -23,6 +23,19 @@ app.add_middleware(
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 
+def gemini_error_detail(e: Exception) -> str:
+    """Chuyển lỗi Gemini thành message tiếng Việt dễ hiểu — đặc biệt phân biệt hết quota
+    (free tier chỉ 20 request/ngày/model, rất dễ hết khi test nhiều lần) với các lỗi khác."""
+    text = str(e)
+    if "RESOURCE_EXHAUSTED" in text or " 429" in text:
+        return (
+            "Đã hết quota Gemini API miễn phí trong ngày (giới hạn 20 request/ngày cho model "
+            "gemini-flash-latest, dùng chung cho mọi endpoint). Đợi quota reset (theo ngày) hoặc "
+            f"đổi sang API key/gói trả phí khác. Chi tiết gốc: {text}"
+        )
+    return f"Gemini API error: {text}"
+
+
 class ChatRequest(BaseModel):
     message: str
 
@@ -97,7 +110,7 @@ def chat(request: ChatRequest):
         )
         return {"reply": response.text}
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Gemini API error: {e}")
+        raise HTTPException(status_code=502, detail=gemini_error_detail(e))
 
 
 @app.post("/api/route-suggest", response_model=RouteSuggestResponse)
@@ -129,7 +142,7 @@ def route_suggest(request: RouteSuggestRequest):
         )
         return RouteSuggestResponse.model_validate_json(response.text)
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Gemini API error: {e}")
+        raise HTTPException(status_code=502, detail=gemini_error_detail(e))
 
 
 @app.post("/api/green-commute", response_model=GreenCommuteResponse)
@@ -177,7 +190,7 @@ def green_commute(request: GreenCommuteRequest):
         )
         ai = GreenCommuteAIInference.model_validate_json(response.text)
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Gemini API error: {e}")
+        raise HTTPException(status_code=502, detail=gemini_error_detail(e))
 
     if ai.is_plausible_moto_replacement:
         pm25_avoided_g = MOTO_PM25_G_PER_TRIP

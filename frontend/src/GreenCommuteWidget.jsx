@@ -54,7 +54,8 @@ export default function GreenCommuteWidget() {
         body: JSON.stringify({ merchant: merchant.trim(), amount_vnd: Number(amount) }),
       })
       if (!res.ok) {
-        throw new Error(`Server trả về lỗi: ${res.status}`)
+        const body = await res.json().catch(() => null)
+        throw new Error(body?.detail || `Server trả về lỗi: ${res.status}`)
       }
       const data = await res.json()
       setResult(data)
