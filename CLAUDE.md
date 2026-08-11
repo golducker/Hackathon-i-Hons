@@ -6,7 +6,7 @@ FastAPI backend (Gemini API) + Vite/React frontend. Repo: golducker/Hackathon-i-
 - `backend/` — FastAPI, `main.py` là gốc, app tên `app`
   - `GET /` → `{"status":"ok"}`
   - `POST /api/chat` nhận `{"message":...}`, gọi Gemini qua `google-genai`, trả `{"reply":...}`, lỗi Gemini trả HTTP 502 (không crash)
-  - Model đang dùng: `gemini-flash-latest` — KHÔNG dùng `gemini-2.5-flash`, key hiện tại bị lỗi 404 "no longer available to new users" với model đó
+  - Model đang dùng: `gemini-3.5-flash-lite` (đổi từ `gemini-flash-latest` vì alias đó trỏ tới `gemini-3.6-flash`, free tier chỉ 20 request/ngày, rất dễ hết quota khi test) — KHÔNG dùng `gemini-2.5-flash`, key hiện tại bị lỗi 404 "no longer available to new users" với model đó
   - `.env` cần `GEMINI_API_KEY` (không commit, tự điền tay mỗi máy)
   - venv riêng theo từng máy, không commit
 - `frontend/` — Vite + React

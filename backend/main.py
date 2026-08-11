@@ -105,7 +105,7 @@ def chat(request: ChatRequest):
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-3.5-flash-lite",
             contents=request.message,
         )
         return {"reply": response.text}
@@ -133,7 +133,7 @@ def route_suggest(request: RouteSuggestRequest):
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-3.5-flash-lite",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -181,7 +181,7 @@ def green_commute(request: GreenCommuteRequest):
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-3.5-flash-lite",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
