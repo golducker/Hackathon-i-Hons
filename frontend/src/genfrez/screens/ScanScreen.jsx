@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Upload, X } from 'lucide-react'
+import { QrCode, Upload, X } from 'lucide-react'
 import { calculatePoints, ADDITIONALITY } from '../emissions'
 import { scanPresets } from '../mockData'
 import { GreenWinkMascot, EyesDecoration } from '../components/MascotArt'
@@ -69,6 +69,12 @@ export default function ScanScreen({ onClaim, onClose }) {
           <span className="gf-qr-corner gf-qr-corner-tr" />
           <span className="gf-qr-corner gf-qr-corner-bl" />
           <span className="gf-qr-corner gf-qr-corner-br" />
+          <span className="gf-qr-frame-hint">
+            <QrCode size={56} strokeWidth={1.2} />
+            <span className="gf-qr-frame-hint-label">
+              {result ? `Scanned: ${selectedPreset.label}` : `Tap to scan · ${selectedPreset.label}`}
+            </span>
+          </span>
         </button>
 
         <div className="gf-scan-preset-chips">

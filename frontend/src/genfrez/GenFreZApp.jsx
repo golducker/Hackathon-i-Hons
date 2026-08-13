@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './genfrez.css'
 import PhoneFrame from './components/PhoneFrame'
 import BottomNav from './components/BottomNav'
+import RankUpCelebration from './components/RankUpCelebration'
 import HomeScreen from './screens/HomeScreen'
 import VouchersScreen from './screens/VouchersScreen'
 import ScanScreen from './screens/ScanScreen'
@@ -34,6 +35,19 @@ export default function GenFreZApp() {
   const [redeemedVouchers, setRedeemedVouchers] = useState({})
 
   const userProfile = { ...initialProfile, score }
+
+  // Bung hiệu ứng thăng hạng đúng 1 lần khi score vượt ngưỡng tier tiếp theo — so
+  // sánh với điểm ở lần render trước qua ref, không phải so với 0/giá trị ban đầu,
+  // để không bung lại mỗi khi score đổi sau khi đã qua ngưỡng (vd: đổi voucher).
+  const prevScoreRef = useRef(score)
+  const [showRankUp, setShowRankUp] = useState(false)
+  useEffect(() => {
+    const threshold = initialProfile.tier.nextThreshold
+    if (prevScoreRef.current < threshold && score >= threshold) {
+      setShowRankUp(true)
+    }
+    prevScoreRef.current = score
+  }, [score])
 
   const addHistory = (entry) => {
     setHistory((h) => [{ id: nextHistoryId(), timestamp: Date.now(), ...entry }, ...h])
@@ -150,6 +164,9 @@ export default function GenFreZApp() {
   return (
     <PhoneFrame nav={<BottomNav activeTab={pushedScreen ? null : activeTab} onSelect={handleSelectTab} />}>
       {screen}
+      {showRankUp && (
+        <RankUpCelebration tierName={initialProfile.tier.next} onClose={() => setShowRankUp(false)} />
+      )}
     </PhoneFrame>
   )
 }

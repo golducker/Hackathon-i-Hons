@@ -1122,6 +1122,7 @@
 
 .gf-scan-body {
   position: relative;
+  background: var(--gf-ink);
   align-items: center;
   padding-top: 28px;
   gap: 16px;
@@ -1186,6 +1187,25 @@
   border-left: none;
   border-top: none;
   border-radius: 0 0 10px 0;
+}
+
+.gf-qr-frame-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--gf-cream);
+  opacity: 0.85;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.gf-qr-frame-hint-label {
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .gf-scan-preset-chips {
@@ -1383,10 +1403,39 @@
 }
 
 .gf-podium {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   gap: 10px;
+}
+
+.gf-sparkle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.gf-sparkle-1 {
+  top: -8px;
+  left: 4px;
+  width: 26px;
+  height: 26px;
+}
+
+.gf-sparkle-2 {
+  top: -18px;
+  left: 50%;
+  transform: translateX(30px);
+  width: 16px;
+  height: 16px;
+}
+
+.gf-sparkle-3 {
+  top: 30px;
+  right: 2px;
 }
 
 .gf-podium-slot {
@@ -1495,23 +1544,38 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--gf-ink);
-  border-radius: 16px;
-  padding: 12px 14px;
+  border-radius: 999px;
+  padding: 10px 18px 10px 8px;
   color: var(--gf-white);
 }
 
 .gf-rank-badge {
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
   border-radius: 999px;
-  background: var(--gf-orange);
+  background: var(--gf-sky);
+  color: var(--gf-ink);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 15px;
   flex: 0 0 auto;
+}
+
+.gf-leaderboard-you {
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.gf-leaderboard-gap {
+  text-align: center;
+  color: var(--gf-white);
+  opacity: 0.5;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 4px;
+  padding: 2px 0;
 }
 
 .gf-leaderboard-info {
@@ -1656,4 +1720,314 @@
   font-weight: 700;
   text-align: center;
   margin-top: 2px;
+}
+
+/* ---------- Rank-up celebration (kiểu màn "Rank Up" của Valorant) ---------- */
+
+@keyframes gf-rankup-rays-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gf-rankup-badge-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(-30deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.15) rotate(8deg);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, -50%) scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes gf-rankup-badge-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(255, 200, 60, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 22px rgba(255, 220, 100, 0.95));
+  }
+}
+
+/* Lớp màu thật "bung" ra từ tâm theo hình tròn, để lộ dần huy hiệu vàng thật
+   nằm đè lên lớp khoá (xám) phía dưới — mô phỏng khoảnh khắc "mở khoá" hạng. */
+@keyframes gf-rankup-badge-colorize {
+  0% {
+    filter: grayscale(1) brightness(0.55) contrast(1.05);
+  }
+  100% {
+    filter: grayscale(0) brightness(1) contrast(1);
+  }
+}
+
+@keyframes gf-rankup-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  35% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+@keyframes gf-rankup-shine-sweep {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(140%) skewX(-18deg);
+  }
+}
+
+@keyframes gf-rankup-pop-in {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes gf-rankup-sparkle-burst {
+  0% {
+    transform: scale(0) translate(0, 0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1) translate(calc(var(--tx) * 0.4), calc(var(--ty) * 0.4));
+  }
+  100% {
+    transform: scale(0.6) translate(var(--tx), var(--ty));
+    opacity: 0;
+  }
+}
+
+.gf-rankup-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, rgba(70, 46, 0, 0.94) 0%, rgba(8, 6, 3, 0.97) 70%);
+  animation: gf-fade-in 0.25s ease;
+}
+
+/* Huy hiệu, tia sáng và hạt lấp lánh đều ghim đúng tâm màn hình (50%/50%) bằng
+   position:absolute độc lập với khối text bên dưới — để huy hiệu luôn đứng yên
+   giữa màn hình suốt hoạt cảnh, không bị đẩy lệch khi text/nút xuất hiện dần. */
+.gf-rankup-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  height: 380px;
+  margin: -190px 0 0 -190px;
+  border-radius: 999px;
+  background: repeating-conic-gradient(rgba(255, 205, 70, 0.32) 0deg 8deg, transparent 8deg 20deg);
+  animation: gf-rankup-rays-spin 9s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.gf-rankup-sparkles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.gf-rankup-sparkle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  opacity: 0;
+  animation: gf-rankup-sparkle-burst 1.1s ease-out forwards;
+}
+
+.gf-rankup-sparkle-1 {
+  --tx: -95px;
+  --ty: -55px;
+  animation-delay: 0.55s;
+}
+
+.gf-rankup-sparkle-2 {
+  --tx: 95px;
+  --ty: -55px;
+  animation-delay: 0.6s;
+}
+
+.gf-rankup-sparkle-3 {
+  --tx: -80px;
+  --ty: 60px;
+  animation-delay: 0.68s;
+}
+
+.gf-rankup-sparkle-4 {
+  --tx: 80px;
+  --ty: 60px;
+  animation-delay: 0.72s;
+}
+
+.gf-rankup-sparkle-5 {
+  --tx: 0px;
+  --ty: -110px;
+  animation-delay: 0.5s;
+}
+
+.gf-rankup-sparkle-6 {
+  --tx: 0px;
+  --ty: 100px;
+  animation-delay: 0.78s;
+}
+
+.gf-rankup-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  width: 148px;
+  height: 148px;
+  opacity: 0;
+  animation: gf-rankup-badge-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards,
+    gf-rankup-badge-glow 1.8s ease-in-out 0.6s infinite;
+}
+
+/* Một ảnh duy nhất, đổi từ xám (khoá) sang màu vàng thật bằng filter animation —
+   cố tình không chồng 2 lớp ảnh + clip-path (bản trước dùng cách đó, ảnh bị ẩn
+   mất sau khi hiệu ứng chạy xong). filter luôn áp lên chính ảnh gốc, không có
+   lớp phủ nào khác có thể vô tình che mất nó.
+   z-index cao nhất trong nhóm — flash/shine bên dưới chỉ tạo quầng sáng loang ra
+   quanh viền huy hiệu (nhờ kích thước lớn hơn ảnh), không còn phủ lên mặt ảnh. */
+.gf-rankup-badge-img {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) brightness(0.55) contrast(1.05);
+  animation: gf-rankup-badge-colorize 0.6s ease-out 0.6s forwards;
+}
+
+/* Flash chỉ bùng lên SAU khi ảnh đã lên màu vàng xong hẳn (colorize kết thúc ở
+   1.2s) — trước đây flash và colorize chạy chồng lên nhau, đúng lúc ảnh lên
+   màu thì bị flash trắng gần như đục che mất, nhìn như "biến mất". */
+.gf-rankup-badge-flash {
+  position: absolute;
+  inset: -20%;
+  z-index: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 250, 220, 0.95) 0%, rgba(255, 210, 90, 0.5) 40%, transparent 70%);
+  opacity: 0;
+  animation: gf-rankup-flash 0.5s ease-out 1.15s forwards;
+  pointer-events: none;
+}
+
+.gf-rankup-badge-shine {
+  position: absolute;
+  inset: -15%;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gf-rankup-badge-shine::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: 0;
+  width: 30%;
+  height: 160%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent 100%
+  );
+  transform: translateX(-140%) skewX(-18deg);
+  animation: gf-rankup-shine-sweep 0.8s ease-in-out 1.4s;
+}
+
+.gf-rankup-text {
+  position: absolute;
+  top: calc(50% + 95px);
+  left: 50%;
+  z-index: 2;
+  width: 100%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.gf-rankup-kicker {
+  position: relative;
+  z-index: 2;
+  color: #ffd97a;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-top: 20px;
+  opacity: 0;
+  animation: gf-fade-in 0.4s ease 0.3s forwards;
+}
+
+.gf-rankup-title {
+  position: relative;
+  z-index: 2;
+  color: var(--gf-white);
+  font-weight: 800;
+  font-size: 44px;
+  text-shadow: 0 0 24px rgba(255, 210, 90, 0.8);
+  opacity: 0;
+  animation: gf-rankup-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s forwards;
+}
+
+.gf-rankup-sub {
+  position: relative;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 260px;
+  opacity: 0;
+  margin-bottom: 12px;
+  animation: gf-fade-in 0.4s ease 1.9s forwards;
+}
+
+.gf-rankup-cta {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: gf-fade-in 0.4s ease 2.1s forwards;
 }

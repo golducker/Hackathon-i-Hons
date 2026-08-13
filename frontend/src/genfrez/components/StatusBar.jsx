@@ -1,7 +1,7 @@
 export default function StatusBar() {
   return (
     <div className="gf-status-bar">
-      <span>9:41</span>
+      <span>9:53</span>
       <span className="gf-status-bar-icons">
         <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true">
           <rect x="0" y="7" width="3" height="5" rx="0.5" />

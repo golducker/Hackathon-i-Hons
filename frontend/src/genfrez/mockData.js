@@ -5,7 +5,7 @@
 // score đổi (đổi voucher / quét chuyến đi), vì thanh tiến độ luôn phải khớp điểm hiện tại.
 export const userProfile = {
   name: 'Tèo',
-  score: 10000,
+  score: 13667,
   tier: {
     current: 'Silver',
     next: 'Gold',
@@ -132,15 +132,43 @@ export const vouchers = [
   },
 ]
 
-// BMC §4.1 — Green Leaderboard theo trường/quận, dưới nickname.
-// `points` của 'teo.rides' chỉ là chỗ giữ chỗ — CommunityScreen luôn ghi đè bằng
-// userProfile.score (số dư thật) rồi sắp xếp lại thứ hạng, để khớp với My Score ở Home.
+// BMC §4.1 — Green Leaderboard theo trường/quận. `points` của 'teo.rides' chỉ là chỗ
+// giữ chỗ — CommunityScreen luôn ghi đè bằng userProfile.score (số dư thật) rồi sắp
+// xếp lại thứ hạng, để khớp với My Score ở Home.
+//
+// Có ~30 người để giống một leaderboard thật (người dùng không mặc định luôn đứng
+// #1) — ranks 1-7 đặt tên/điểm tay cho khớp ảnh thiết kế, ranks 8-26 sinh bằng vòng
+// lặp (không gõ tay 19 dòng) với điểm giảm dần đều để 10.000 điểm hiện tại của Tèo
+// tự nhiên rơi vào khoảng hạng #27 khi CommunityScreen tính lại — nếu điểm Tèo đổi,
+// hạng cũng tính lại đúng, không phải số cố định.
+const TOP_LEADERBOARD = [
+  { nickname: 'Nguyen Minh Duc', org: 'FPT University', points: 24500 },
+  { nickname: 'Tran Bao Ngoc', org: 'NEU', points: 22300 },
+  { nickname: 'Pham Quang Huy', org: 'Foreign Trade University', points: 21000 },
+  { nickname: 'Le Pham Bao Mai', org: 'Foreign Trade University', points: 19800 },
+  { nickname: 'Vu Uyen Nhi', org: 'NEU', points: 19750 },
+  { nickname: 'Nguyen Bao Linh', org: 'Bách Khoa', points: 19500 },
+  { nickname: 'Nguyen Huy Minh', org: 'FPT University', points: 19450 },
+]
+
+const FILLER_NAMES = [
+  'Tran Minh Khoa', 'Pham Gia Han', 'Do Thuy Duong', 'Hoang Anh Tuan', 'Vo Ngoc Anh',
+  'Dang Bao Chau', 'Bui Xuan Mai', 'Ngo Hai Dang', 'Ly Thu Trang', 'Trinh Van Phuc',
+  'Cao Yen Nhi', 'Ha Duc Thinh', 'Luu Kim Ngan', 'Phan Quoc Bao', 'Ta Thanh Tam',
+  'Nguyen Gia Bao', 'Le Hoang Yen', 'Vu Minh Chau', 'Dinh Thi Lan',
+]
+const FILLER_ORGS = ['FPT University', 'NEU', 'Bách Khoa', 'Cầu Giấy', 'Foreign Trade University']
+
+const FILLER_LEADERBOARD = FILLER_NAMES.map((nickname, i) => ({
+  nickname,
+  org: FILLER_ORGS[i % FILLER_ORGS.length],
+  points: Math.round(19000 - i * 489),
+}))
+
 export const leaderboard = [
-  { rank: 1, nickname: 'lanh.ne', org: 'FPT University', points: 4820 },
-  { rank: 2, nickname: 'binh_moto0', org: 'NEU', points: 4310 },
-  { rank: 3, nickname: 'teo.rides', org: 'Bách Khoa', points: 1000 },
-  { rank: 4, nickname: 'xanh_hanoi', org: 'Cầu Giấy', points: 860 },
-  { rank: 5, nickname: 'may_bus_08', org: 'FPT University', points: 705 },
+  ...TOP_LEADERBOARD,
+  ...FILLER_LEADERBOARD,
+  { nickname: 'teo.rides', org: 'Bách Khoa', points: 10000 },
 ]
 
 // BMC §7.3 — mô phỏng chuyến đi Tier B (GPS + QR động), vì demo chưa có B2G Tier A-2.
