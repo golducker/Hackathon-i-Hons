@@ -125,7 +125,7 @@ export default function GenFreZApp() {
         )
         break
       case 'scan':
-        screen = <ScanScreen onClaim={claimScanPoints} />
+        screen = <ScanScreen onClaim={claimScanPoints} onClose={() => handleSelectTab('home')} />
         break
       case 'community':
         screen = <CommunityScreen userProfile={userProfile} />

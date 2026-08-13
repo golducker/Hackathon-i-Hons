@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import { QrCode } from 'lucide-react'
+import { Upload, X } from 'lucide-react'
 import { calculatePoints, ADDITIONALITY } from '../emissions'
 import { scanPresets } from '../mockData'
+import { GreenWinkMascot, EyesDecoration } from '../components/MascotArt'
 import { playClickSound } from '../sound'
 
-export default function ScanScreen({ onClaim }) {
-  const [selectedPreset, setSelectedPreset] = useState(null)
+export default function ScanScreen({ onClaim, onClose }) {
+  // Mặc định chọn sẵn preset đầu tiên để bấm khung QR/nút Upload là chạy được ngay,
+  // không bắt buộc phải chọn preset trước như bản cũ.
+  const [selectedPreset, setSelectedPreset] = useState(scanPresets[0])
   const [result, setResult] = useState(null)
   const [claimed, setClaimed] = useState(false)
 
   const runScan = (preset) => {
-    playClickSound()
     setSelectedPreset(preset)
     setClaimed(false)
     // BMC §7.3: bản demo chạy hoàn toàn ở tầng B (GPS + QR động), chưa có B2G Tier A-2.
@@ -25,6 +27,21 @@ export default function ScanScreen({ onClaim }) {
     setResult(calc)
   }
 
+  const handleScanFrame = () => {
+    playClickSound()
+    runScan(selectedPreset)
+  }
+
+  const handlePresetChip = (preset) => {
+    playClickSound()
+    runScan(preset)
+  }
+
+  const handleClose = () => {
+    playClickSound()
+    onClose()
+  }
+
   const handleClaim = () => {
     playClickSound()
     if (!result || claimed) return
@@ -34,29 +51,45 @@ export default function ScanScreen({ onClaim }) {
 
   return (
     <div className="gf-screen">
-      <div className="gf-screen-header">
-        <h1 className="gf-screen-title">Scan</h1>
-        <p className="gf-screen-subtitle">Simulate a Tier B check-in — GPS + dynamic QR, no camera needed for the demo.</p>
+      <div className="gf-scan-header">
+        <button type="button" className="gf-scan-close" aria-label="Close scan" onClick={handleClose}>
+          <X size={20} strokeWidth={3} />
+        </button>
+        <h1 className="gf-scan-header-title">Scan QR Code</h1>
+        <p className="gf-scan-header-desc">
+          Scan the QR code at the bus stop to start tracking your green journey. The QR code refreshes
+          every 30 seconds.
+        </p>
+        <EyesDecoration className="gf-scan-eyes" />
       </div>
 
-      <div className="gf-screen-body">
-        <div className="gf-scan-frame" aria-hidden="true">
-          <QrCode size={100} strokeWidth={1.5} />
-        </div>
+      <div className="gf-screen-body gf-scan-body">
+        <button type="button" className="gf-qr-frame" aria-label={`Simulate scan: ${selectedPreset.label}`} onClick={handleScanFrame}>
+          <span className="gf-qr-corner gf-qr-corner-tl" />
+          <span className="gf-qr-corner gf-qr-corner-tr" />
+          <span className="gf-qr-corner gf-qr-corner-bl" />
+          <span className="gf-qr-corner gf-qr-corner-br" />
+        </button>
 
-        <p className="gf-group-label">Pick a trip to simulate</p>
-        <div className="gf-scan-preset-list">
+        <div className="gf-scan-preset-chips">
           {scanPresets.map((preset) => (
             <button
               key={preset.id}
               type="button"
-              className={`gf-scan-preset-btn${selectedPreset?.id === preset.id ? ' gf-active' : ''}`}
-              onClick={() => runScan(preset)}
+              className={`gf-scan-chip${selectedPreset.id === preset.id ? ' gf-active' : ''}`}
+              onClick={() => handlePresetChip(preset)}
             >
               {preset.label}
             </button>
           ))}
         </div>
+
+        <button type="button" className="gf-scan-upload-btn" onClick={handleScanFrame}>
+          <span>Upload from gallery</span>
+          <Upload size={18} />
+        </button>
+
+        <GreenWinkMascot className="gf-scan-mascot" />
 
         {result && (
           <div className="gf-scan-result">
@@ -66,13 +99,10 @@ export default function ScanScreen({ onClaim }) {
                 <span>{step.value}</span>
               </div>
             ))}
-            <div className="gf-scan-total">+{result.points.toFixed(2)} points (≈ {Math.round(result.voucherValueVnd)}đ)</div>
-            <button
-              type="button"
-              className="gf-voucher-btn"
-              disabled={claimed}
-              onClick={handleClaim}
-            >
+            <div className="gf-scan-total">
+              +{result.points.toFixed(2)} points (≈ {Math.round(result.voucherValueVnd)}đ)
+            </div>
+            <button type="button" className="gf-voucher-btn" disabled={claimed} onClick={handleClaim}>
               {claimed ? 'Added to your score' : 'Claim points'}
             </button>
           </div>
