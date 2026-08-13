@@ -171,6 +171,16 @@ export const leaderboard = [
   { nickname: 'teo.rides', org: 'Bách Khoa', points: 10000 },
 ]
 
+// Dùng chung bởi CommunityScreen (bục top-3 + danh sách) và ProfileScreen (chỉ cần
+// "Your rank") — một chỗ duy nhất thay điểm placeholder + sắp lại hạng, để hai màn
+// không lệch nhau nếu logic tính hạng đổi sau này.
+export function computeLiveLeaderboard(score) {
+  return leaderboard
+    .map((entry) => (entry.nickname === 'teo.rides' ? { ...entry, points: score } : entry))
+    .sort((a, b) => b.points - a.points)
+    .map((entry, index) => ({ ...entry, rank: index + 1 }))
+}
+
 // BMC §7.3 — mô phỏng chuyến đi Tier B (GPS + QR động), vì demo chưa có B2G Tier A-2.
 export const scanPresets = [
   {
@@ -223,3 +233,19 @@ export const verificationTiers = [
     note: 'Self-reported, discounted the most heavily to resist gaming.',
   },
 ]
+
+// Thẻ "Statistics · This week" ở Profile — snapshot tĩnh cho demo (không cộng dồn
+// từ history thật), vì một phiên demo chỉ kéo dài vài phút không thể tự có đủ dữ
+// liệu trải suốt 7 ngày để vẽ biểu đồ có ý nghĩa.
+export const weeklyStats = {
+  days: [
+    { label: 'Mon', km: 2.84 },
+    { label: 'Tue', km: 6.17 },
+    { label: 'Wed', km: 4.32 },
+    { label: 'Thu', km: 7.05 },
+    { label: 'Fri', km: 3.26 },
+    { label: 'Sat', km: 8.11 },
+    { label: 'Sun', km: 4.92 },
+  ],
+  pointsAchieved: 580,
+}

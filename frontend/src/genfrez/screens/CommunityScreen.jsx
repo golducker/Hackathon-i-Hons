@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { leaderboard, greenChallenges } from '../mockData'
+import { computeLiveLeaderboard, greenChallenges } from '../mockData'
 import { OrangeWavyMascot, HeartMascot, PinkSquareWaveMascot, SparkleDecoration } from '../components/MascotArt'
 import { playClickSound } from '../sound'
 
@@ -55,14 +55,10 @@ function LeaderboardRow({ entry, shade, isYou, youName }) {
 export default function CommunityScreen({ userProfile }) {
   const [scope, setScope] = useState(SCOPES[0])
 
-  // Thay điểm placeholder của 'teo.rides' bằng số dư thật (userProfile.score), rồi
-  // xếp lại hạng theo điểm mới trên toàn bộ ~30 người trong mockData.leaderboard —
-  // nếu điểm đổi ở Vouchers/Scan/Missions, hạng ở đây tính lại đúng theo, không phải
-  // số cố định.
-  const liveLeaderboard = leaderboard
-    .map((entry) => (entry.nickname === 'teo.rides' ? { ...entry, points: userProfile.score } : entry))
-    .sort((a, b) => b.points - a.points)
-    .map((entry, index) => ({ ...entry, rank: index + 1 }))
+  // Thay điểm placeholder của 'teo.rides' bằng số dư thật (userProfile.score) rồi
+  // sắp lại hạng trên toàn bộ ~30 người — dùng chung logic với ProfileScreen qua
+  // computeLiveLeaderboard() ở mockData.js, để hai màn không lệch nhau.
+  const liveLeaderboard = computeLiveLeaderboard(userProfile.score)
 
   const yourEntry = liveLeaderboard.find((entry) => entry.nickname === 'teo.rides')
   const top3 = liveLeaderboard.slice(0, 3)
