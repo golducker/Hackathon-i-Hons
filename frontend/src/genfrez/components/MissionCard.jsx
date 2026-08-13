@@ -1,18 +1,34 @@
-import { Check, ChevronRight } from 'lucide-react'
+import { Check, ChevronRight, Flame, Footprints, Users } from 'lucide-react'
+import { PointsBadge } from './PointsIcon'
+import { playClickSound } from '../sound'
+
+const ICONS = { flame: Flame, footprints: Footprints, users: Users }
 
 export default function MissionCard({ mission, completed, onOpen }) {
+  const Icon = ICONS[mission.icon] ?? Flame
+
+  const handleClick = () => {
+    playClickSound()
+    onOpen?.(mission)
+  }
+
   return (
-    <div className={`gf-mission-card${completed ? ' gf-mission-card-done' : ''}`}>
-      <span className="gf-mission-tag">{mission.tag}</span>
-      <p className="gf-mission-desc">{mission.description}</p>
-      <button
-        type="button"
-        className="gf-mission-arrow"
-        aria-label={completed ? `${mission.tag} completed — view result` : `Complete ${mission.tag}`}
-        onClick={() => onOpen?.(mission)}
-      >
-        {completed ? <Check size={26} strokeWidth={3} /> : <ChevronRight size={26} strokeWidth={3} />}
-      </button>
-    </div>
+    <button
+      type="button"
+      className={`gf-mission-card-v2${completed ? ' gf-mission-card-v2-done' : ''}`}
+      onClick={handleClick}
+    >
+      <div className="gf-mission-card-v2-top">
+        <span className="gf-mission-card-v2-back" aria-hidden="true">
+          {completed ? <Check size={14} strokeWidth={3} /> : <ChevronRight size={14} strokeWidth={3} />}
+        </span>
+        <span className="gf-mission-card-v2-points">
+          <PointsBadge size={16} />
+          {mission.rewardPoints.toLocaleString('vi-VN')}
+        </span>
+      </div>
+      <Icon size={48} strokeWidth={1.2} className="gf-mission-card-v2-icon" />
+      <span className="gf-mission-card-v2-title">{mission.tag}</span>
+    </button>
   )
 }

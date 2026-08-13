@@ -10,6 +10,22 @@
   --gf-coral: #e8785c;
   --gf-track: #f7f1e4;
   --gf-white: #ffffff;
+  --gf-pink: #f2a6c9;
+  --gf-blue-star: #6fb3e0;
+  --gf-magenta: #d6427e;
+  --gf-rust: #b5502e;
+}
+
+/* Tôn trọng prefers-reduced-motion — tắt gần hết animation/transition cho người
+   dùng đã bật cài đặt này ở hệ điều hành, không chỉ riêng browser. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* ---------- Khung ngoài + status bar ---------- */
@@ -95,24 +111,27 @@
   justify-content: center;
   overflow: hidden;
   flex: 0 0 auto;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-avatar:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 14px rgba(23, 57, 74, 0.35);
+  }
+}
+
+.gf-avatar:active {
+  transform: scale(0.92);
 }
 
 .gf-avatar-mascot {
   width: 100%;
   height: 100%;
-}
-
-.gf-avatar-mascot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.gf-avatar-mascot .gf-mascot-fallback {
-  width: 100%;
-  height: 100%;
-  border-radius: 999px;
-  transform: none;
+  display: block;
 }
 
 .gf-greeting {
@@ -121,100 +140,232 @@
   margin-bottom: 16px;
 }
 
-/* ---------- Stat cards ---------- */
+/* ---------- Points icon (ring + badge dùng chung) ---------- */
 
-.gf-stat-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.gf-points-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
 }
 
-.gf-stat-card {
+.gf-points-ring-badge {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border-radius: 999px;
+  background: var(--gf-orange);
+  color: var(--gf-white);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.gf-points-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--gf-orange);
+  color: var(--gf-white);
+  font-weight: 800;
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
+/* ---------- My points card ---------- */
+
+.gf-points-card {
+  width: 100%;
   background: var(--gf-ink);
   border-radius: 20px;
   padding: 14px 16px;
-  color: var(--gf-white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  font-family: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-points-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(23, 57, 74, 0.3);
+  }
+}
+
+.gf-points-card:active {
+  transform: scale(0.98);
+}
+
+.gf-points-card-body {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
+  min-width: 0;
 }
 
-.gf-stat-label {
-  font-size: 17px;
+.gf-points-card-label {
+  font-size: 15px;
   font-weight: 700;
-}
-
-.gf-score-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.gf-score-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  background: var(--gf-orange);
   color: var(--gf-white);
+}
+
+.gf-points-card-value {
+  font-size: 24px;
   font-weight: 800;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--gf-white);
+}
+
+.gf-points-card-value-muted {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.gf-points-card-caption {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.gf-points-card-caption strong {
+  color: var(--gf-orange);
+  font-weight: 800;
+}
+
+.gf-points-card-chevron {
+  color: var(--gf-white);
+  opacity: 0.6;
   flex: 0 0 auto;
 }
 
-.gf-score-value {
-  font-size: 28px;
-  font-weight: 800;
-}
+/* ---------- Quick actions row ---------- */
 
-.gf-tier-row {
+.gf-quick-actions {
   display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.gf-quick-action {
+  flex: 1 1 0;
+  background: var(--gf-ink);
+  color: var(--gf-white);
+  border: none;
+  border-radius: 16px;
+  padding: 14px 6px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.gf-tier-track {
+@media (hover: hover) and (pointer: fine) {
+  .gf-quick-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(23, 57, 74, 0.3);
+  }
+}
+
+.gf-quick-action:active {
+  transform: scale(0.94);
+}
+
+/* ---------- TOP DEALS banner ---------- */
+
+.gf-deals-banner {
   position: relative;
-  flex: 1 1 auto;
-  height: 22px;
-  background: var(--gf-track);
-  border-radius: 999px;
+  width: 100%;
+  min-height: 190px;
+  margin-top: 12px;
+  background: var(--gf-ink);
+  border: none;
+  border-radius: 24px;
   overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.gf-tier-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: var(--gf-orange);
-  border-radius: 999px;
+@media (hover: hover) and (pointer: fine) {
+  .gf-deals-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(23, 57, 74, 0.35);
+  }
 }
 
-.gf-tier-fraction {
+.gf-deals-banner:active {
+  transform: scale(0.98);
+}
+
+.gf-deals-banner-orange {
   position: absolute;
   inset: 0;
+  width: 68%;
+  background: var(--gf-orange);
+  border-radius: 24px 90px 90px 24px;
+  padding: 20px 32px 20px 20px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--gf-ink);
+  gap: 4px;
+  text-align: left;
 }
 
-.gf-tier-icon {
-  font-size: 20px;
-  flex: 0 0 auto;
+.gf-deals-banner-kicker {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  font-size: 15px;
 }
 
-.gf-tier-caption {
-  font-size: 11px;
-  font-weight: 700;
+.gf-deals-banner-title {
   color: var(--gf-white);
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.05;
 }
 
-.gf-tier-caption strong {
-  color: var(--gf-orange);
+.gf-deals-banner-sub {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.gf-deals-banner-cta {
+  color: var(--gf-white);
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: underline;
+  margin-top: 10px;
+}
+
+.gf-deals-banner-mascot {
+  position: relative;
+  z-index: 1;
+  width: 110px;
+  height: 130px;
+  margin-right: 12px;
+  margin-bottom: 4px;
+  display: block;
 }
 
 /* ---------- Thân trang (sky) ---------- */
@@ -239,119 +390,124 @@
   margin-bottom: 4px;
 }
 
-.gf-mission-list {
+.gf-section-title-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.gf-section-title-left {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--gf-ink);
+}
+
+.gf-section-mascot {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  display: block;
+}
+
+/* ---------- MissionCard (icon + G-badge, khớp ảnh thiết kế mới) ---------- */
+
+.gf-mission-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* ---------- MissionCard ---------- */
-
-.gf-mission-card {
+.gf-mission-card-v2 {
   position: relative;
   background: var(--gf-ink);
-  border-radius: 20px;
-  padding: 22px 78px 16px 16px;
-  margin-top: 14px;
-}
-
-.gf-mission-tag {
-  position: absolute;
-  top: -14px;
-  left: 0;
-  background: var(--gf-orange);
-  color: var(--gf-white);
-  font-weight: 800;
-  font-size: 16px;
-  padding: 6px 16px;
-  border-radius: 10px 10px 10px 0;
-}
-
-.gf-mission-desc {
-  color: var(--gf-white);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.gf-mission-arrow {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 54px;
-  height: 54px;
-  border-radius: 999px;
-  background: var(--gf-orange);
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gf-white);
-  cursor: pointer;
-}
-
-.gf-mission-card-done {
-  opacity: 0.6;
-}
-
-.gf-mission-card-done .gf-mission-arrow {
-  background: var(--gf-teal);
-}
-
-/* ---------- Mission result modal (hoàn thành nhiệm vụ) ---------- */
-
-.gf-modal-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  background: rgba(23, 57, 74, 0.72);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 16px;
-}
-
-.gf-modal-card {
-  position: relative;
-  width: 100%;
-  max-height: 88%;
-  overflow-y: auto;
-  background: var(--gf-sky);
-  border-radius: 24px;
-  padding: 22px 18px 18px;
+  border-radius: 20px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.25s ease;
 }
 
-.gf-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: var(--gf-ink);
+@media (hover: hover) and (pointer: fine) {
+  .gf-mission-card-v2:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(23, 57, 74, 0.3);
+  }
+}
+
+.gf-mission-card-v2:active {
+  transform: scale(0.96);
+}
+
+.gf-mission-card-v2-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gf-mission-card-v2-back {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
   color: var(--gf-white);
-  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  flex: 0 0 auto;
 }
 
-.gf-modal-banner {
+.gf-mission-card-v2-points {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--gf-orange);
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--gf-orange);
+  border-radius: 999px;
+  padding: 3px 8px 3px 4px;
+  color: var(--gf-white);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gf-mission-card-v2-icon {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 6px 0;
+}
+
+.gf-mission-card-v2-title {
   color: var(--gf-white);
   font-weight: 800;
   font-size: 15px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  padding-right: 40px;
+  text-align: center;
+}
+
+.gf-mission-card-v2-done {
+  opacity: 0.55;
+}
+
+.gf-mission-card-v2-done .gf-mission-card-v2-back {
+  background: var(--gf-teal);
+}
+
+/* ---------- Hiệu ứng chuyển trang cho các màn "pushed" ---------- */
+
+@keyframes gf-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gf-page-enter {
+  animation: gf-fade-in 0.18s ease;
 }
 
 .gf-modal-lede {
@@ -380,6 +536,17 @@
   margin-top: 2px;
 }
 
+.gf-referral-code {
+  background: var(--gf-cream);
+  color: var(--gf-ink);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 15px;
+}
+
 /* ---------- Green Challenges (phương án thiết kế 2 trong ảnh) ---------- */
 
 .gf-challenges-card {
@@ -390,6 +557,16 @@
   overflow: hidden;
 }
 
+.gf-challenge-details {
+  margin-bottom: 12px;
+}
+
+.gf-challenge-details:last-of-type {
+  margin-bottom: 0;
+}
+
+/* <summary> tự có marker/disclosure-triangle mặc định của trình duyệt — tắt đi vì
+   đã có mũi tên "›" riêng, và toàn bộ tương tác (hover/active) áp lên chính summary. */
 .gf-challenge-pill {
   display: flex;
   align-items: center;
@@ -398,15 +575,27 @@
   color: var(--gf-white);
   border-radius: 999px;
   padding: 14px 20px;
-  margin-bottom: 12px;
   max-width: 78%;
   cursor: pointer;
-  border: none;
+  list-style: none;
   text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
-.gf-challenge-pill:last-of-type {
-  margin-bottom: 0;
+.gf-challenge-pill::-webkit-details-marker {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-challenge-pill:hover {
+    transform: translateX(3px);
+    filter: brightness(1.08);
+    box-shadow: 0 6px 14px rgba(23, 57, 74, 0.3);
+  }
+}
+
+.gf-challenge-pill:active {
+  transform: scale(0.97);
 }
 
 .gf-challenge-title {
@@ -424,6 +613,15 @@
   justify-content: center;
   flex: 0 0 auto;
   margin-left: 12px;
+  transition: transform 0.15s ease;
+}
+
+.gf-challenge-details[open] .gf-challenge-arrow {
+  transform: rotate(90deg);
+}
+
+.gf-challenge-pill:active .gf-challenge-arrow {
+  transform: scale(0.85);
 }
 
 .gf-mascot {
@@ -432,20 +630,7 @@
   bottom: 8px;
   width: 108px;
   height: 108px;
-}
-
-.gf-mascot img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.gf-mascot-fallback {
-  width: 100%;
-  height: 100%;
-  border-radius: 24px;
-  background: var(--gf-coral);
-  transform: rotate(12deg);
+  display: block;
 }
 
 .gf-challenge-detail {
@@ -482,6 +667,39 @@
   font-weight: 600;
   margin-top: 4px;
   opacity: 0.85;
+}
+
+.gf-screen-header-back {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.gf-back-btn {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--gf-ink);
+  color: var(--gf-white);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 2px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-back-btn:hover {
+    transform: scale(1.1);
+    background: var(--gf-teal);
+  }
+}
+
+.gf-back-btn:active {
+  transform: scale(0.85);
 }
 
 .gf-screen-body {
@@ -558,6 +776,20 @@
   font-size: 14px;
   cursor: pointer;
   margin-top: 4px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-voucher-btn:not(:disabled):hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(242, 106, 27, 0.35);
+  }
+}
+
+.gf-voucher-btn:not(:disabled):active {
+  transform: scale(0.95);
+  filter: brightness(0.95);
 }
 
 .gf-voucher-btn:disabled {
@@ -591,6 +823,102 @@
   border-radius: 8px;
 }
 
+.gf-inline-link {
+  display: inline-block;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gf-ink);
+  font-weight: 700;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-inline-link:hover {
+    opacity: 0.7;
+  }
+}
+
+.gf-inline-link:active {
+  opacity: 0.5;
+}
+
+.gf-voucher-status {
+  flex: 0 0 auto;
+  background: var(--gf-teal);
+  color: var(--gf-white);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.gf-voucher-status-used {
+  background: var(--gf-track);
+  color: var(--gf-ink);
+  opacity: 0.8;
+}
+
+/* ---------- Vouchers screen header (khớp ảnh thiết kế mới) ---------- */
+
+.gf-vouchers-header {
+  flex: 0 0 auto;
+  background: var(--gf-cream);
+  border-radius: 0 0 24px 24px;
+  padding: 4px 16px 8px;
+  color: var(--gf-ink);
+}
+
+.gf-vouchers-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gf-vouchers-balance {
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gf-vouchers-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+
+.gf-vouchers-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--gf-ink);
+  text-shadow: 3px 3px 0 rgba(23, 57, 74, 0.12);
+}
+
+.gf-vouchers-hero-mascot {
+  width: 74px;
+  height: 88px;
+  flex: 0 0 auto;
+  display: block;
+}
+
+.gf-vouchers-hero-mascot-left {
+  transform: rotate(-4deg);
+}
+
+.gf-vouchers-hero-mascot-right {
+  transform: rotate(4deg);
+}
+
 /* ---------- Scan screen ---------- */
 
 .gf-scan-frame {
@@ -621,6 +949,18 @@
   color: var(--gf-ink);
   text-align: left;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-scan-preset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(23, 57, 74, 0.25);
+  }
+}
+
+.gf-scan-preset-btn:active {
+  transform: scale(0.97);
 }
 
 .gf-scan-preset-btn.gf-active {
@@ -657,6 +997,78 @@
   font-size: 18px;
   font-weight: 800;
   color: var(--gf-orange);
+}
+
+/* ---------- History screen ---------- */
+
+.gf-history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--gf-ink);
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: var(--gf-white);
+}
+
+.gf-history-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.gf-history-icon-up {
+  background: var(--gf-orange);
+}
+
+.gf-history-icon-down {
+  background: var(--gf-teal);
+}
+
+.gf-history-icon-flat {
+  background: var(--gf-track);
+  color: var(--gf-ink);
+}
+
+.gf-history-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gf-history-title {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.gf-history-detail {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 1px;
+}
+
+.gf-history-time {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+.gf-history-delta {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.gf-history-delta-up {
+  color: var(--gf-orange);
+}
+
+.gf-history-delta-down {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ---------- Community screen ---------- */
@@ -768,6 +1180,18 @@
   font-weight: 600;
   cursor: pointer;
   flex: 1 1 0;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-nav-item:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+}
+
+.gf-nav-item:active {
+  transform: scale(0.9);
 }
 
 .gf-nav-item.gf-active {
@@ -794,6 +1218,18 @@
   justify-content: center;
   color: var(--gf-white);
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gf-nav-scan:hover {
+    transform: scale(1.07);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.gf-nav-scan:active {
+  transform: scale(0.9);
 }
 
 .gf-nav-scan-label {

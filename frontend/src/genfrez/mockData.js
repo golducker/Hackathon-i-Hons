@@ -9,36 +9,47 @@ export const userProfile = {
   tier: {
     current: 'Silver',
     next: 'Gold',
-    nextThreshold: 12000,
+    nextThreshold: 15000,
   },
 }
 
-// BMC §4.1 — "the users who invite the most people in each area" + 3 nhiệm vụ mẫu
-// khớp với ảnh thiết kế Home.png (khối MISSIONS phương án 1).
+// `trip` chỉ có ở 2 nhiệm vụ transport (Streak Rider, Green Steps) — trang task của
+// chúng vẫn chạy quãng đường/phương tiện mock này qua đúng công thức calculatePoints()
+// ở emissions.js để hiện breakdown CO2 tránh được + ẩn dụ cây xanh, y hệt cách Scan
+// screen tính. Crew Recruiter không phải hành vi di chuyển nên không có `trip`, trang
+// task của nó hiện nội dung referral thay vì breakdown phát thải.
 //
-// `trip` chỉ có ở 2 nhiệm vụ transport (Streak Rider, Green Steps) — khi hoàn thành,
-// quãng đường/phương tiện mock ở đây chạy qua đúng công thức calculatePoints() ở
-// emissions.js, giống hệt cách Scan screen tính, để điểm hiện ra khớp với phần chiết
-// khấu hiển thị trên màn "hoàn thành nhiệm vụ". Crew Recruiter không phải hành vi di
-// chuyển nên không có quãng đường để tính phát thải — dùng thẳng rewardPoints.
+// `rewardPoints` là điểm THẬT được cộng khi hoàn thành (khớp số hiển thị trên card ở
+// ảnh thiết kế mới — 1.000 / 2.000). Formula ở emissions.js vẫn chạy và hiện đầy đủ để
+// giữ tính minh bạch giáo dục (đúng công thức BMC §5.5), nhưng số điểm formula ra rất
+// nhỏ (~1-3 điểm/chuyến do hệ số ngân sách thí điểm 0.3) — nếu dùng thẳng số đó làm
+// điểm thưởng thì lệch hẳn quy mô với số dư 10.000+ và giá voucher 120-400 điểm. Vì
+// vậy breakdown công thức chỉ mang tính minh hoạ "cách tính hoạt động", còn điểm thật
+// cộng vào ví lấy từ rewardPoints cố định này.
+// `icon` map sang icon lucide-react trong MissionCard.jsx.
 export const missions = [
   {
     id: 'streak-rider',
     tag: 'Streak Rider',
     description: 'Keep the streak alive and ride the bus 5 days in a row.',
+    icon: 'flame',
+    rewardPoints: 1000,
     trip: { distanceKm: 5, replacementVehicle: 'busMarginal', confidenceTier: 'B' },
   },
   {
     id: 'green-steps',
     tag: 'Green Steps',
     description: 'Ditch the wheels, trust your feet. 2km walked = zero emissions, all clout.',
+    icon: 'footprints',
+    rewardPoints: 500,
     trip: { distanceKm: 2, replacementVehicle: 'walking', confidenceTier: 'B' },
   },
   {
     id: 'crew-recruiter',
     tag: 'Crew Recruiter',
     description: 'Drag 3 friends onboard. More riders, more points for everyone.',
-    rewardPoints: 300,
+    icon: 'users',
+    rewardPoints: 2000,
   },
 ]
 

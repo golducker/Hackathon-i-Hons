@@ -1,36 +1,30 @@
-import { useState } from 'react'
 import { vouchers } from '../mockData'
+import { PointsBadge } from '../components/PointsIcon'
+import { BlueStarMascot, PinkStarMascot } from '../components/MascotArt'
+import { playClickSound } from '../sound'
 
 function fmtScore(n) {
   return n.toLocaleString('vi-VN', { maximumFractionDigits: 0 })
 }
 
-// Mô phỏng deep link + verification token của BMC §7.6 — chỉ là chuỗi minh hoạ,
-// không có backend thật đứng sau, không xử lý thanh toán.
-function generateRedemption(voucher) {
-  const token = Math.random().toString(36).slice(2, 10).toUpperCase()
-  return {
-    code: `GFZ-${voucher.id.slice(0, 4).toUpperCase()}-${token}`,
-    deepLink: `genfrez://redeem?voucher=${voucher.id}&token=${token}`,
-  }
-}
-
-export default function VouchersScreen({ balance, onRedeem }) {
-  const [redeemed, setRedeemed] = useState({})
-
+export default function VouchersScreen({ balance, redeemedVouchers, onRedeem, onViewMyVouchers }) {
   const visibleVouchers = vouchers.filter((v) => !v.gated || v.eligible)
   const group1 = visibleVouchers.filter((v) => v.group === '1')
   const group2 = visibleVouchers.filter((v) => v.group === '2')
 
   const handleRedeem = (voucher) => {
-    if (balance < voucher.costPoints || redeemed[voucher.id]) return
-    onRedeem(voucher.costPoints)
-    setRedeemed((prev) => ({ ...prev, [voucher.id]: generateRedemption(voucher) }))
+    playClickSound()
+    onRedeem(voucher)
+  }
+
+  const handleViewMyVouchers = () => {
+    playClickSound()
+    onViewMyVouchers()
   }
 
   const renderVoucher = (voucher) => {
     const affordable = balance >= voucher.costPoints
-    const done = redeemed[voucher.id]
+    const done = redeemedVouchers[voucher.id]
     return (
       <div key={voucher.id} className="gf-voucher-card">
         <div className="gf-voucher-top">
@@ -38,7 +32,7 @@ export default function VouchersScreen({ balance, onRedeem }) {
             <div className="gf-voucher-partner">{voucher.partner}</div>
             <div className="gf-voucher-title">{voucher.title}</div>
           </div>
-          <div className="gf-voucher-cost">{fmtScore(voucher.costPoints)} pts</div>
+          <div className="gf-voucher-cost">{fmtScore(voucher.costPoints)} points</div>
         </div>
         <p className="gf-voucher-note">{voucher.note}</p>
         <button
@@ -54,6 +48,9 @@ export default function VouchersScreen({ balance, onRedeem }) {
             Voucher code generated. In production this hands off to {voucher.partner}&apos;s own
             checkout — the platform never holds funds (BMC §5.1, §7.5).
             <code>{done.deepLink}</code>
+            <button type="button" className="gf-inline-link" onClick={handleViewMyVouchers}>
+              View in Your rewards →
+            </button>
           </div>
         )}
       </div>
@@ -62,16 +59,25 @@ export default function VouchersScreen({ balance, onRedeem }) {
 
   return (
     <div className="gf-screen">
-      <div className="gf-screen-header">
-        <h1 className="gf-screen-title">Vouchers</h1>
-        <p className="gf-screen-subtitle">Your balance: {fmtScore(balance)} points</p>
+      <div className="gf-vouchers-header">
+        <div className="gf-vouchers-header-row">
+          <span className="gf-logo">GenFreZ</span>
+          <span className="gf-vouchers-balance">
+            Your balance: <strong>{fmtScore(balance)}</strong> <PointsBadge size={20} />
+          </span>
+        </div>
+        <div className="gf-vouchers-hero">
+          <BlueStarMascot className="gf-vouchers-hero-mascot gf-vouchers-hero-mascot-left" />
+          <h1 className="gf-vouchers-title">Vouchers</h1>
+          <PinkStarMascot className="gf-vouchers-hero-mascot gf-vouchers-hero-mascot-right" />
+        </div>
       </div>
 
       <div className="gf-screen-body">
-        <p className="gf-group-label">Group 1 · Green transport</p>
+        <h2 className="gf-section-title-left">Green Transport</h2>
         {group1.map(renderVoucher)}
 
-        <p className="gf-group-label">Group 2 · Partner rewards</p>
+        <h2 className="gf-section-title-left">Partner Rewards</h2>
         {group2.map(renderVoucher)}
       </div>
     </div>

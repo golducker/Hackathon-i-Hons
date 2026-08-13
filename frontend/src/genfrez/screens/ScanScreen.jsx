@@ -2,14 +2,16 @@ import { useState } from 'react'
 import { QrCode } from 'lucide-react'
 import { calculatePoints, ADDITIONALITY } from '../emissions'
 import { scanPresets } from '../mockData'
+import { playClickSound } from '../sound'
 
-export default function ScanScreen({ onEarnPoints }) {
-  const [selectedId, setSelectedId] = useState(null)
+export default function ScanScreen({ onClaim }) {
+  const [selectedPreset, setSelectedPreset] = useState(null)
   const [result, setResult] = useState(null)
   const [claimed, setClaimed] = useState(false)
 
   const runScan = (preset) => {
-    setSelectedId(preset.id)
+    playClickSound()
+    setSelectedPreset(preset)
     setClaimed(false)
     // BMC §7.3: bản demo chạy hoàn toàn ở tầng B (GPS + QR động), chưa có B2G Tier A-2.
     // Hệ số bổ sung dùng mức người dùng mới (0.7) vì demo không có lịch sử 90 ngày thật.
@@ -24,8 +26,9 @@ export default function ScanScreen({ onEarnPoints }) {
   }
 
   const handleClaim = () => {
+    playClickSound()
     if (!result || claimed) return
-    onEarnPoints(result.points)
+    onClaim(selectedPreset, result)
     setClaimed(true)
   }
 
@@ -47,7 +50,7 @@ export default function ScanScreen({ onEarnPoints }) {
             <button
               key={preset.id}
               type="button"
-              className={`gf-scan-preset-btn${selectedId === preset.id ? ' gf-active' : ''}`}
+              className={`gf-scan-preset-btn${selectedPreset?.id === preset.id ? ' gf-active' : ''}`}
               onClick={() => runScan(preset)}
             >
               {preset.label}

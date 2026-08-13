@@ -1,4 +1,5 @@
 import { Home, Ticket, ScanLine, Users, User } from 'lucide-react'
+import { playClickSound } from '../sound'
 
 const TABS = [
   { id: 'home', label: 'Home', Icon: Home },
@@ -9,6 +10,11 @@ const TABS = [
 ]
 
 export default function BottomNav({ activeTab, onSelect }) {
+  const handleSelect = (id) => {
+    playClickSound()
+    onSelect(id)
+  }
+
   return (
     <nav className="gf-bottom-nav">
       {TABS.map(({ id, label, Icon }) =>
@@ -19,7 +25,7 @@ export default function BottomNav({ activeTab, onSelect }) {
               className="gf-nav-scan"
               aria-label={label}
               aria-current={activeTab === id}
-              onClick={() => onSelect(id)}
+              onClick={() => handleSelect(id)}
             >
               <Icon size={26} />
             </button>
@@ -31,7 +37,7 @@ export default function BottomNav({ activeTab, onSelect }) {
             type="button"
             className={`gf-nav-item${activeTab === id ? ' gf-active' : ''}`}
             aria-current={activeTab === id}
-            onClick={() => onSelect(id)}
+            onClick={() => handleSelect(id)}
           >
             <Icon size={20} />
             <span>{label}</span>
