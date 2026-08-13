@@ -1,8 +1,7 @@
-import './App.css'
-import GreenCommuteWidget from './GreenCommuteWidget'
+import GenFreZApp from './genfrez/GenFreZApp'
 
 function App() {
-  return <GreenCommuteWidget />
+  return <GenFreZApp />
 }
 
 export default App

@@ -1,0 +1,716 @@
+/* GenFreZ demo — design system bám theo docs/design/Home.png. Một file CSS duy nhất,
+   không dùng thư viện UI (xem lý do trong prompt: tránh vỡ build Vite trên Vercel). */
+
+:root {
+  --gf-sky: #a9def2;
+  --gf-cream: #edf3d0;
+  --gf-ink: #17394a;
+  --gf-orange: #f26a1b;
+  --gf-teal: #2a93ad;
+  --gf-coral: #e8785c;
+  --gf-track: #f7f1e4;
+  --gf-white: #ffffff;
+}
+
+/* ---------- Khung ngoài + status bar ---------- */
+
+.gf-page-outer {
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 12px;
+}
+
+.gf-phone-frame {
+  width: 100%;
+  max-width: 390px;
+  height: min(844px, calc(100svh - 48px));
+  background: var(--gf-sky);
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(23, 57, 74, 0.35);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.gf-status-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px 4px;
+  background: var(--gf-cream);
+  color: var(--gf-ink);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.gf-status-bar-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gf-phone-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Header (cream) ---------- */
+
+.gf-header {
+  flex: 0 0 auto;
+  background: var(--gf-cream);
+  border-radius: 0 0 24px 24px;
+  padding: 4px 16px 20px;
+  color: var(--gf-ink);
+}
+
+.gf-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.gf-logo {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--gf-ink);
+}
+
+.gf-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--gf-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.gf-avatar-mascot {
+  width: 100%;
+  height: 100%;
+}
+
+.gf-avatar-mascot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gf-avatar-mascot .gf-mascot-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  transform: none;
+}
+
+.gf-greeting {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* ---------- Stat cards ---------- */
+
+.gf-stat-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gf-stat-card {
+  background: var(--gf-ink);
+  border-radius: 20px;
+  padding: 14px 16px;
+  color: var(--gf-white);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gf-stat-label {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.gf-score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gf-score-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: var(--gf-orange);
+  color: var(--gf-white);
+  font-weight: 800;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.gf-score-value {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.gf-tier-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gf-tier-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 22px;
+  background: var(--gf-track);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.gf-tier-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--gf-orange);
+  border-radius: 999px;
+}
+
+.gf-tier-fraction {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gf-ink);
+}
+
+.gf-tier-icon {
+  font-size: 20px;
+  flex: 0 0 auto;
+}
+
+.gf-tier-caption {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gf-white);
+}
+
+.gf-tier-caption strong {
+  color: var(--gf-orange);
+}
+
+/* ---------- Thân trang (sky) ---------- */
+
+.gf-body {
+  flex: 1 1 auto;
+  background: var(--gf-sky);
+  border-radius: 24px 24px 0 0;
+  margin-top: -14px;
+  padding: 24px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.gf-section-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--gf-ink);
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.gf-mission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- MissionCard ---------- */
+
+.gf-mission-card {
+  position: relative;
+  background: var(--gf-ink);
+  border-radius: 20px;
+  padding: 22px 78px 16px 16px;
+  margin-top: 14px;
+}
+
+.gf-mission-tag {
+  position: absolute;
+  top: -14px;
+  left: 0;
+  background: var(--gf-orange);
+  color: var(--gf-white);
+  font-weight: 800;
+  font-size: 16px;
+  padding: 6px 16px;
+  border-radius: 10px 10px 10px 0;
+}
+
+.gf-mission-desc {
+  color: var(--gf-white);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.gf-mission-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: var(--gf-orange);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gf-white);
+  cursor: pointer;
+}
+
+/* ---------- Green Challenges (phương án thiết kế 2 trong ảnh) ---------- */
+
+.gf-challenges-card {
+  background: var(--gf-ink);
+  border-radius: 20px;
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.gf-challenge-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--gf-teal);
+  color: var(--gf-white);
+  border-radius: 999px;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  max-width: 78%;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+}
+
+.gf-challenge-pill:last-of-type {
+  margin-bottom: 0;
+}
+
+.gf-challenge-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.gf-challenge-arrow {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--gf-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
+.gf-mascot {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 108px;
+  height: 108px;
+}
+
+.gf-mascot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gf-mascot-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  background: var(--gf-coral);
+  transform: rotate(12deg);
+}
+
+.gf-challenge-detail {
+  color: var(--gf-white);
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.85;
+  padding: 0 4px 8px;
+}
+
+/* ---------- Generic screen container ---------- */
+
+.gf-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 96px;
+}
+
+.gf-screen-header {
+  padding: 20px 16px 4px;
+  background: var(--gf-cream);
+  border-radius: 0 0 24px 24px;
+  color: var(--gf-ink);
+}
+
+.gf-screen-title {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.gf-screen-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+.gf-screen-body {
+  flex: 1 1 auto;
+  background: var(--gf-sky);
+  border-radius: 24px 24px 0 0;
+  margin-top: -14px;
+  padding: 20px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- Voucher card (luồng lõi: đổi điểm) ---------- */
+
+.gf-group-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gf-ink);
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 4px 0 -2px;
+}
+
+.gf-voucher-card {
+  background: var(--gf-ink);
+  border-radius: 20px;
+  padding: 16px;
+  color: var(--gf-white);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gf-voucher-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.gf-voucher-partner {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gf-orange);
+  text-transform: uppercase;
+}
+
+.gf-voucher-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.gf-voucher-cost {
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.gf-voucher-note {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.gf-voucher-btn {
+  align-self: flex-start;
+  background: var(--gf-orange);
+  color: var(--gf-white);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.gf-voucher-btn:disabled {
+  background: var(--gf-track);
+  color: var(--gf-ink);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gf-voucher-card-ineligible {
+  opacity: 0.45;
+}
+
+.gf-redeem-confirm {
+  background: var(--gf-cream);
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: var(--gf-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.gf-redeem-confirm code {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  word-break: break-all;
+  background: var(--gf-white);
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+/* ---------- Scan screen ---------- */
+
+.gf-scan-frame {
+  align-self: center;
+  width: 220px;
+  height: 220px;
+  border-radius: 24px;
+  background: var(--gf-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gf-white);
+}
+
+.gf-scan-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gf-scan-preset-btn {
+  background: var(--gf-white);
+  border: 2px solid var(--gf-ink);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gf-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.gf-scan-preset-btn.gf-active {
+  background: var(--gf-ink);
+  color: var(--gf-white);
+}
+
+.gf-scan-result {
+  background: var(--gf-ink);
+  border-radius: 20px;
+  padding: 16px;
+  color: var(--gf-white);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gf-scan-step-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 6px;
+}
+
+.gf-scan-step-row:last-of-type {
+  border-bottom: none;
+}
+
+.gf-scan-total {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gf-orange);
+}
+
+/* ---------- Community screen ---------- */
+
+.gf-leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--gf-ink);
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: var(--gf-white);
+}
+
+.gf-rank-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--gf-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+
+.gf-leaderboard-info {
+  flex: 1 1 auto;
+}
+
+.gf-leaderboard-nickname {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.gf-leaderboard-org {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.gf-leaderboard-points {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--gf-orange);
+}
+
+/* ---------- Profile screen ---------- */
+
+.gf-profile-card {
+  background: var(--gf-ink);
+  border-radius: 20px;
+  padding: 16px;
+  color: var(--gf-white);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gf-tier-legend-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+}
+
+.gf-tier-legend-row:last-of-type {
+  border-bottom: none;
+}
+
+.gf-tier-legend-label {
+  font-weight: 700;
+}
+
+.gf-tier-legend-note {
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+/* ---------- BottomNav ---------- */
+
+.gf-bottom-nav {
+  position: sticky;
+  bottom: 0;
+  flex: 0 0 auto;
+  margin: 0 16px 16px;
+  background: var(--gf-ink);
+  border-radius: 999px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gf-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--gf-white);
+  opacity: 0.65;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1 1 0;
+}
+
+.gf-nav-item.gf-active {
+  opacity: 1;
+  font-weight: 700;
+}
+
+.gf-nav-scan-wrapper {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -34px;
+}
+
+.gf-nav-scan {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: #0c1f28;
+  border: 4px solid var(--gf-sky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gf-white);
+  cursor: pointer;
+}
+
+.gf-nav-scan-label {
+  color: var(--gf-white);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 2px;
+}
