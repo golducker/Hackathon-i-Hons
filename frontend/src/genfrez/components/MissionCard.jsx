@@ -4,8 +4,18 @@ import { playClickSound } from '../sound'
 
 const ICONS = { flame: Flame, footprints: Footprints, users: Users }
 
+// Hiệu ứng động riêng cho từng nhiệm vụ — bùng lửa cho Streak Rider, nhấp nháy
+// xanh lá sống động cho Green Steps, nhấp nháy xanh dương cho Crew Recruiter.
+// Xem @keyframes gf-fire-*/gf-green-*/gf-blue-* trong genfrez.css.
+const ICON_EFFECTS = {
+  'streak-rider': 'gf-mission-fx-fire',
+  'green-steps': 'gf-mission-fx-green',
+  'crew-recruiter': 'gf-mission-fx-blue',
+}
+
 export default function MissionCard({ mission, completed, onOpen }) {
   const Icon = ICONS[mission.icon] ?? Flame
+  const iconEffect = ICON_EFFECTS[mission.id]
 
   const handleClick = () => {
     playClickSound()
@@ -27,7 +37,9 @@ export default function MissionCard({ mission, completed, onOpen }) {
           {mission.rewardPoints.toLocaleString('vi-VN')}
         </span>
       </div>
-      <Icon size={48} strokeWidth={1.2} className="gf-mission-card-v2-icon" />
+      <span className={`gf-mission-card-v2-icon-wrap${iconEffect ? ` ${iconEffect}` : ''}`}>
+        <Icon size={48} strokeWidth={1.2} className="gf-mission-card-v2-icon" />
+      </span>
       <span className="gf-mission-card-v2-title">{mission.tag}</span>
     </button>
   )

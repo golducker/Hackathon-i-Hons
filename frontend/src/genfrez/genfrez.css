@@ -477,9 +477,146 @@
   font-weight: 700;
 }
 
-.gf-mission-card-v2-icon {
-  color: rgba(255, 255, 255, 0.75);
+.gf-mission-card-v2-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 6px 0;
+}
+
+.gf-mission-card-v2-icon {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------- Hiệu ứng bùng lửa (Streak Rider) ---------- */
+
+@keyframes gf-fire-glow {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.95;
+  }
+}
+
+@keyframes gf-fire-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(-3deg);
+    filter: drop-shadow(0 0 3px rgba(242, 106, 27, 0.7));
+  }
+  20% {
+    transform: scale(1.06) rotate(2deg);
+    filter: drop-shadow(0 0 6px rgba(255, 140, 20, 0.9));
+  }
+  40% {
+    transform: scale(0.96) rotate(-2deg);
+    filter: drop-shadow(0 0 4px rgba(230, 57, 20, 0.8));
+  }
+  60% {
+    transform: scale(1.08) rotate(3deg);
+    filter: drop-shadow(0 0 9px rgba(255, 120, 0, 1));
+  }
+  80% {
+    transform: scale(1.02) rotate(-1deg);
+    filter: drop-shadow(0 0 5px rgba(242, 106, 27, 0.75));
+  }
+}
+
+.gf-mission-fx-fire::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 140, 20, 0.6) 0%, rgba(230, 57, 20, 0.35) 45%, transparent 75%);
+  animation: gf-fire-glow 1.1s ease-in-out infinite;
+  z-index: 0;
+}
+
+.gf-mission-fx-fire .gf-mission-card-v2-icon {
+  color: var(--gf-orange);
+  animation: gf-fire-flicker 0.7s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+/* ---------- Hiệu ứng xanh lá sống động (Green Steps) ---------- */
+
+@keyframes gf-pulse-ring {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes gf-green-vibrant {
+  0%,
+  100% {
+    color: var(--gf-green);
+    filter: drop-shadow(0 0 4px rgba(47, 166, 107, 0.6));
+    transform: scale(1);
+  }
+  50% {
+    color: #4ee08a;
+    filter: drop-shadow(0 0 11px rgba(78, 224, 138, 0.95));
+    transform: scale(1.1);
+  }
+}
+
+.gf-mission-fx-green::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 999px;
+  border: 3px solid var(--gf-green);
+  animation: gf-pulse-ring 1.6s ease-out infinite;
+  z-index: 0;
+}
+
+.gf-mission-fx-green .gf-mission-card-v2-icon {
+  animation: gf-green-vibrant 1.7s ease-in-out infinite;
+}
+
+/* ---------- Hiệu ứng xanh dương sống động (Crew Recruiter) ---------- */
+
+@keyframes gf-blue-vibrant {
+  0%,
+  100% {
+    color: var(--gf-blue-star);
+    filter: drop-shadow(0 0 4px rgba(111, 179, 224, 0.6));
+    transform: scale(1);
+  }
+  50% {
+    color: #7fd8ff;
+    filter: drop-shadow(0 0 11px rgba(127, 216, 255, 0.95));
+    transform: scale(1.1);
+  }
+}
+
+.gf-mission-fx-blue::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 999px;
+  border: 3px solid var(--gf-blue-star);
+  animation: gf-pulse-ring 1.6s ease-out infinite;
+  z-index: 0;
+}
+
+.gf-mission-fx-blue .gf-mission-card-v2-icon {
+  animation: gf-blue-vibrant 1.7s ease-in-out infinite;
 }
 
 .gf-mission-card-v2-title {
