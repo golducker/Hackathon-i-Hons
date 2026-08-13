@@ -3,19 +3,19 @@
 
 // BMC §7.4 — hệ số phát thải theo phương tiện (g CO2/km)
 export const VEHICLE_FACTORS = {
-  petrolMoto: { label: 'Xe máy xăng (đường cơ sở)', gPerKm: 95 },
-  electricMoto: { label: 'Xe máy điện', gPerKm: 30 },
-  busMarginal: { label: 'Xe buýt (hành khách tăng thêm)', gPerKm: 0 },
-  electricCar1p: { label: 'Ô tô điện, 1 người', gPerKm: 93 },
-  walking: { label: 'Đi bộ / xe đạp cá nhân', gPerKm: 0 },
+  petrolMoto: { label: 'Petrol motorbike (baseline)', gPerKm: 95 },
+  electricMoto: { label: 'Electric motorbike', gPerKm: 30 },
+  busMarginal: { label: 'Bus (marginal passenger)', gPerKm: 0 },
+  electricCar1p: { label: 'Electric car, 1 passenger', gPerKm: 93 },
+  walking: { label: 'Walking / personal bicycle', gPerKm: 0 },
 }
 
 // BMC §7.3 — hệ số tin cậy theo tầng xác minh
 export const CONFIDENCE_TIERS = {
-  A1: { label: 'A-1 · Webhook đối tác', value: 1.0 },
-  A2: { label: 'A-2 · Vé điện tử Hà Nội', value: 1.0 },
-  B: { label: 'B · GPS + QR động', value: 0.7 },
-  C: { label: 'C · Tự khai báo có ảnh', value: 0.2 },
+  A1: { label: 'A-1 · Partner webhook', value: 1.0 },
+  A2: { label: 'A-2 · Hanoi e-ticketing', value: 1.0 },
+  B: { label: 'B · GPS + dynamic QR', value: 0.7 },
+  C: { label: 'C · Self-report with photo', value: 0.2 },
 }
 
 // BMC §7.2 — hệ số bổ sung: người dùng mới (30 ngày đầu) mặc định 0.7, sàn 0.4, trần 1.0
@@ -27,6 +27,16 @@ export const BUDGET_COEFFICIENT_PILOT = 0.3
 // BMC §5.5 — quy đổi cố định: 25g CO2 tránh được = 1 điểm; 1 điểm = 100đ mệnh giá voucher
 export const GRAMS_PER_POINT = 25
 export const VND_PER_POINT = 100
+
+// Ẩn dụ "cây xanh trung hoà CO2" cho màn hoàn thành nhiệm vụ — ước tính phổ biến hay
+// được trích dẫn (gần khớp US EPA, ~21kg CO2/cây/năm), đánh dấu rõ là giả định tham
+// khảo cho demo, không phải số đo thực địa như hệ số ở §7.4.
+export const TREE_ABSORPTION_KG_PER_YEAR = 21
+export const TREE_ABSORPTION_G_PER_HOUR = (TREE_ABSORPTION_KG_PER_YEAR * 1000) / (365 * 24)
+
+export function co2GramsToTreeHours(co2G) {
+  return co2G / TREE_ABSORPTION_G_PER_HOUR
+}
 
 /**
  * Tính điểm thưởng cho một chuyến đi, trả về cả các bước trung gian để hiển thị
@@ -53,17 +63,17 @@ export function calculatePoints({
 
   return {
     steps: [
-      { label: 'Quãng đường', value: `${distanceKm} km` },
+      { label: 'Distance', value: `${distanceKm} km` },
       {
-        label: 'Chênh lệch hệ số phát thải',
+        label: 'Emission factor difference',
         value: `${baselineFactor} − ${replacementFactor} = ${factorDiff} g CO2/km`,
       },
-      { label: 'CO2 tránh được (chưa chiết khấu)', value: `${rawAvoidedG.toFixed(2)} g` },
-      { label: 'Hệ số tin cậy', value: confidenceValue.toFixed(2) },
-      { label: 'Hệ số bổ sung', value: additionality.toFixed(2) },
-      { label: 'Hệ số ngân sách', value: budgetCoefficient.toFixed(2) },
-      { label: 'CO2 tránh được (sau chiết khấu)', value: `${co2AvoidedG.toFixed(2)} g` },
-      { label: 'Quy đổi điểm (÷ 25g/điểm)', value: `${points.toFixed(2)} điểm` },
+      { label: 'CO2 avoided (before discount)', value: `${rawAvoidedG.toFixed(2)} g` },
+      { label: 'Confidence coefficient', value: confidenceValue.toFixed(2) },
+      { label: 'Additionality coefficient', value: additionality.toFixed(2) },
+      { label: 'Budget coefficient', value: budgetCoefficient.toFixed(2) },
+      { label: 'CO2 avoided (after discount)', value: `${co2AvoidedG.toFixed(2)} g` },
+      { label: 'Converted to points (÷ 25g/point)', value: `${points.toFixed(2)} points` },
     ],
     baselineFactor,
     replacementFactor,

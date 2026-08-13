@@ -5,6 +5,14 @@ function fmtScore(n) {
 }
 
 export default function CommunityScreen({ userProfile }) {
+  // Thay điểm placeholder của 'teo.rides' bằng số dư thật (userProfile.score), rồi
+  // xếp lại hạng theo điểm mới — nếu không, khi đổi/nhận điểm ở Vouchers hay Scan,
+  // bảng xếp hạng sẽ hiện một con số không khớp với My Score ở Home.
+  const liveLeaderboard = leaderboard
+    .map((entry) => (entry.nickname === 'teo.rides' ? { ...entry, points: userProfile.score } : entry))
+    .sort((a, b) => b.points - a.points)
+    .map((entry, index) => ({ ...entry, rank: index + 1 }))
+
   return (
     <div className="gf-screen">
       <div className="gf-screen-header">
@@ -14,9 +22,9 @@ export default function CommunityScreen({ userProfile }) {
 
       <div className="gf-screen-body">
         <p className="gf-group-label">Leaderboard · FPT University</p>
-        {leaderboard.map((entry) => (
+        {liveLeaderboard.map((entry) => (
           <div
-            key={entry.rank}
+            key={entry.nickname}
             className="gf-leaderboard-row"
             style={entry.nickname === 'teo.rides' ? { outline: '2px solid var(--gf-orange)' } : undefined}
           >

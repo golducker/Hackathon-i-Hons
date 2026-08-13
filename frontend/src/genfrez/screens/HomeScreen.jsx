@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import MissionCard from '../components/MissionCard'
+import MissionResultModal from '../components/MissionResultModal'
 import Mascot from '../components/Mascot'
 import { missions, greenChallenges } from '../mockData'
+import { calculatePoints, co2GramsToTreeHours, VEHICLE_FACTORS, ADDITIONALITY, TREE_ABSORPTION_KG_PER_YEAR } from '../emissions'
 
 function fmtScore(n) {
   return n.toLocaleString('vi-VN', { maximumFractionDigits: 0 })
@@ -15,11 +17,43 @@ function fmtCompact(n) {
   return `${Number.isInteger(k) ? k : k.toFixed(1)}k`
 }
 
-export default function HomeScreen({ userProfile }) {
+export default function HomeScreen({ userProfile, onEarnPoints }) {
   const { name, score, tier } = userProfile
   const progressPct = Math.min(100, Math.round((score / tier.nextThreshold) * 100))
   const remaining = Math.max(0, tier.nextThreshold - score)
   const [openChallengeId, setOpenChallengeId] = useState(null)
+
+  // Kết quả hoàn thành từng nhiệm vụ, khoá theo id — chỉ tính (và cộng điểm) một lần,
+  // click lại chỉ mở lại modal để xem lại kết quả, không cộng điểm thêm lần nữa.
+  const [missionResults, setMissionResults] = useState({})
+  const [activeMissionId, setActiveMissionId] = useState(null)
+  const activeMission = missions.find((m) => m.id === activeMissionId) ?? null
+
+  const handleOpenMission = (mission) => {
+    if (!missionResults[mission.id]) {
+      let result
+      if (mission.trip) {
+        const calc = calculatePoints({
+          distanceKm: mission.trip.distanceKm,
+          baselineVehicle: 'petrolMoto',
+          replacementVehicle: mission.trip.replacementVehicle,
+          confidenceTier: mission.trip.confidenceTier,
+          additionality: ADDITIONALITY.NEW_USER,
+        })
+        result = {
+          ...calc,
+          baselineG: mission.trip.distanceKm * VEHICLE_FACTORS.petrolMoto.gPerKm,
+          treeHours: co2GramsToTreeHours(calc.co2AvoidedG),
+          treeAbsorptionKgPerYear: TREE_ABSORPTION_KG_PER_YEAR,
+        }
+      } else {
+        result = { points: mission.rewardPoints }
+      }
+      onEarnPoints(result.points)
+      setMissionResults((prev) => ({ ...prev, [mission.id]: result }))
+    }
+    setActiveMissionId(mission.id)
+  }
 
   return (
     <>
@@ -74,7 +108,12 @@ export default function HomeScreen({ userProfile }) {
         <h2 className="gf-section-title">Missions</h2>
         <div className="gf-mission-list">
           {missions.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} />
+            <MissionCard
+              key={mission.id}
+              mission={mission}
+              completed={Boolean(missionResults[mission.id])}
+              onOpen={handleOpenMission}
+            />
           ))}
         </div>
 
@@ -106,6 +145,12 @@ export default function HomeScreen({ userProfile }) {
           <Mascot className="gf-mascot" />
         </div>
       </div>
+
+      <MissionResultModal
+        mission={activeMission}
+        result={activeMission ? missionResults[activeMission.id] : null}
+        onClose={() => setActiveMissionId(null)}
+      />
     </>
   )
 }

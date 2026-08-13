@@ -36,7 +36,7 @@ export default function GenFreZApp() {
       break
     case 'home':
     default:
-      screen = <HomeScreen userProfile={userProfile} />
+      screen = <HomeScreen userProfile={userProfile} onEarnPoints={earnPoints} />
   }
 
   return (

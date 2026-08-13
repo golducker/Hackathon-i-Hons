@@ -15,18 +15,24 @@ export const userProfile = {
 
 // BMC §4.1 — "the users who invite the most people in each area" + 3 nhiệm vụ mẫu
 // khớp với ảnh thiết kế Home.png (khối MISSIONS phương án 1).
+//
+// `trip` chỉ có ở 2 nhiệm vụ transport (Streak Rider, Green Steps) — khi hoàn thành,
+// quãng đường/phương tiện mock ở đây chạy qua đúng công thức calculatePoints() ở
+// emissions.js, giống hệt cách Scan screen tính, để điểm hiện ra khớp với phần chiết
+// khấu hiển thị trên màn "hoàn thành nhiệm vụ". Crew Recruiter không phải hành vi di
+// chuyển nên không có quãng đường để tính phát thải — dùng thẳng rewardPoints.
 export const missions = [
   {
     id: 'streak-rider',
     tag: 'Streak Rider',
     description: 'Keep the streak alive and ride the bus 5 days in a row.',
-    rewardPoints: 150,
+    trip: { distanceKm: 5, replacementVehicle: 'busMarginal', confidenceTier: 'B' },
   },
   {
     id: 'green-steps',
     tag: 'Green Steps',
     description: 'Ditch the wheels, trust your feet. 2km walked = zero emissions, all clout.',
-    rewardPoints: 60,
+    trip: { distanceKm: 2, replacementVehicle: 'walking', confidenceTier: 'B' },
   },
   {
     id: 'crew-recruiter',
@@ -116,6 +122,8 @@ export const vouchers = [
 ]
 
 // BMC §4.1 — Green Leaderboard theo trường/quận, dưới nickname.
+// `points` của 'teo.rides' chỉ là chỗ giữ chỗ — CommunityScreen luôn ghi đè bằng
+// userProfile.score (số dư thật) rồi sắp xếp lại thứ hạng, để khớp với My Score ở Home.
 export const leaderboard = [
   { rank: 1, nickname: 'lanh.ne', org: 'FPT University', points: 4820 },
   { rank: 2, nickname: 'binh_moto0', org: 'NEU', points: 4310 },
@@ -128,21 +136,21 @@ export const leaderboard = [
 export const scanPresets = [
   {
     id: 'bus-08',
-    label: 'Xe buýt tuyến 08 — 5km',
+    label: 'Bus route 08 — 5km',
     distanceKm: 5,
     replacementVehicle: 'busMarginal',
     confidenceTier: 'B',
   },
   {
     id: 'ebike-tngo',
-    label: 'Xe đạp điện TNGo — 3km',
+    label: 'TNGo e-bike — 3km',
     distanceKm: 3,
     replacementVehicle: 'electricMoto',
     confidenceTier: 'B',
   },
   {
     id: 'walk-2km',
-    label: 'Đi bộ — 2km',
+    label: 'Walking — 2km',
     distanceKm: 2,
     replacementVehicle: 'walking',
     confidenceTier: 'B',
@@ -155,24 +163,24 @@ export const verificationTiers = [
     id: 'A1',
     label: 'A-1 · Partner webhook',
     confidence: '1.0',
-    note: 'Xanh SM, VinBus, TNGo — timestamp và quãng đường do đối tác cung cấp.',
+    note: 'Xanh SM, VinBus, TNGo — timestamp and distance supplied by the partner.',
   },
   {
     id: 'A2',
     label: 'A-2 · Hanoi e-ticketing',
     confidence: '1.0',
-    note: 'Tap-in/tap-out, cần B2G — chưa ký, roadmap tháng 7–12.',
+    note: 'Tap-in/tap-out, requires a B2G agreement — not signed yet, roadmap month 7–12.',
   },
   {
     id: 'B',
     label: 'B · GPS + dynamic QR',
     confidence: '0.6–0.8',
-    note: 'Đang dùng cho bản demo này.',
+    note: 'What this demo currently uses.',
   },
   {
     id: 'C',
     label: 'C · Self-report + photo',
     confidence: '0.2',
-    note: 'Tự khai báo, chiết khấu nặng nhất để chống gian lận.',
+    note: 'Self-reported, discounted the most heavily to resist gaming.',
   },
 ]
