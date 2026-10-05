@@ -10,7 +10,7 @@ body {
 
 body {
   min-height: 100svh;
-  background: #dfe3e6;
+  background: linear-gradient(160deg, #d3edf6 0%, #eef3da 55%, #fde5d2 100%) fixed;
   font-family: 'Montserrat', system-ui, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

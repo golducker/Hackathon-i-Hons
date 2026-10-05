@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Crown } from 'lucide-react'
 import { computeLiveLeaderboard, greenChallenges } from '../mockData'
-import { OrangeWavyMascot, HeartMascot, PinkSquareWaveMascot, SparkleDecoration } from '../components/MascotArt'
+import Mascot, { Sparkle } from '../components/Mascot'
+import Reveal from '../components/Reveal'
 import { playClickSound } from '../sound'
 
 function fmtPoints(n) {
@@ -13,24 +15,31 @@ function fmtPoints(n) {
 const SCOPES = ['Hanoi', 'Foreign Trade University']
 
 const PODIUM_MASCOTS = {
-  1: HeartMascot,
-  2: OrangeWavyMascot,
-  3: PinkSquareWaveMascot,
+  1: 'heart-hug',
+  2: 'yellow-tongue',
+  3: 'square-wave',
 }
+
+// Bục mọc lên theo thứ tự kịch tính: hạng 3 → hạng 2 → hạng 1.
+const PODIUM_DELAY = { 1: 360, 2: 180, 3: 0 }
 
 // Sắc độ hàng xếp hạng nhạt dần từ #4 xuống #7, giống dải màu trong ảnh thiết kế.
 const ROW_SHADES = ['#2a93ad', '#3f8fa4', '#557f96', '#6c7f89']
 const YOUR_ROW_SHADE = '#7c98a3'
 
 function PodiumSlot({ entry, tall }) {
-  const Mascot = PODIUM_MASCOTS[entry.rank]
   return (
-    <div className={`gf-podium-slot${tall ? ' gf-podium-slot-tall' : ''}`}>
+    <div
+      className={`gf-podium-slot gf-podium-rank-${entry.rank}${tall ? ' gf-podium-slot-tall' : ''}`}
+      style={{ '--rise-delay': `${PODIUM_DELAY[entry.rank]}ms` }}
+    >
+      {tall && <Crown className="gf-podium-crown" size={26} strokeWidth={2.4} aria-hidden="true" />}
       <div className="gf-podium-avatar">
-        <Mascot className="gf-podium-avatar-mascot" />
+        <Mascot name={PODIUM_MASCOTS[entry.rank]} className="gf-podium-avatar-mascot" />
       </div>
       <div className="gf-podium-name">{entry.nickname}</div>
       <div className="gf-podium-org">{entry.org}</div>
+      <div className="gf-podium-points">{fmtPoints(entry.points)}</div>
       <div className="gf-podium-rank-chip">#{entry.rank}</div>
     </div>
   )
@@ -38,7 +47,7 @@ function PodiumSlot({ entry, tall }) {
 
 function LeaderboardRow({ entry, shade, isYou, youName }) {
   return (
-    <div className="gf-leaderboard-row" style={{ background: shade }}>
+    <div className={`gf-leaderboard-row${isYou ? ' gf-leaderboard-row-you' : ''}`} style={{ background: shade }}>
       <span className="gf-rank-badge">{entry.rank}</span>
       <div className="gf-leaderboard-info">
         <div className="gf-leaderboard-nickname">
@@ -85,9 +94,11 @@ export default function CommunityScreen({ userProfile }) {
         <h1 className="gf-leaderboard-title">Leaderboard</h1>
 
         <div className="gf-podium">
-          <SparkleDecoration className="gf-sparkle gf-sparkle-1" />
-          <SparkleDecoration className="gf-sparkle gf-sparkle-2" />
-          <SparkleDecoration className="gf-sparkle gf-sparkle-3" />
+          <span className="gf-podium-spotlight" aria-hidden="true" />
+          <Sparkle className="gf-sparkle gf-sparkle-1" />
+          <Sparkle className="gf-sparkle gf-sparkle-2" />
+          <Sparkle className="gf-sparkle gf-sparkle-3" />
+          <Sparkle className="gf-sparkle gf-sparkle-4" />
           {second && <PodiumSlot entry={second} />}
           {first && <PodiumSlot entry={first} tall />}
           {third && <PodiumSlot entry={third} />}
@@ -109,7 +120,14 @@ export default function CommunityScreen({ userProfile }) {
         </div>
 
         {nearTop.map((entry, i) => (
-          <LeaderboardRow key={entry.nickname} entry={entry} shade={ROW_SHADES[i]} isYou={false} />
+          <Reveal key={entry.nickname} variant="right" delay={i * 70}>
+            <LeaderboardRow
+              entry={entry}
+              shade={ROW_SHADES[i]}
+              isYou={entry.nickname === 'teo.rides'}
+              youName={userProfile.name}
+            />
+          </Reveal>
         ))}
 
         {showYouSeparately && (
@@ -117,18 +135,24 @@ export default function CommunityScreen({ userProfile }) {
             <div className="gf-leaderboard-gap" aria-hidden="true">
               ⋯
             </div>
-            <LeaderboardRow entry={yourEntry} shade={YOUR_ROW_SHADE} isYou youName={userProfile.name} />
+            <Reveal variant="pop">
+              <LeaderboardRow entry={yourEntry} shade={YOUR_ROW_SHADE} isYou youName={userProfile.name} />
+            </Reveal>
           </>
         )}
 
-        <p className="gf-group-label">Active Green Challenges</p>
-        {greenChallenges.map((challenge) => (
-          <div key={challenge.id} className="gf-voucher-card">
-            <div className="gf-voucher-title">{challenge.title}</div>
-            <p className="gf-voucher-note">
-              {challenge.sponsor} — {challenge.description}
-            </p>
-          </div>
+        <Reveal>
+          <p className="gf-group-label">Active Green Challenges</p>
+        </Reveal>
+        {greenChallenges.map((challenge, i) => (
+          <Reveal key={challenge.id} delay={i * 80}>
+            <div className="gf-voucher-card gf-challenge-card">
+              <div className="gf-voucher-title">{challenge.title}</div>
+              <p className="gf-voucher-note">
+                {challenge.sponsor} — {challenge.description}
+              </p>
+            </div>
+          </Reveal>
         ))}
       </div>
     </div>

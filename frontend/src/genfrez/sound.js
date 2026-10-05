@@ -37,6 +37,59 @@ export function playClickSound() {
   oscillator.stop(now + 0.1)
 }
 
+// Tiếng "tích năng lượng" vút lên trước khi huy hiệu bung màu ở màn thăng hạng —
+// sawtooth quét tần số đi lên, lọc low-pass cho bớt chói.
+export function playChargeSound(duration = 1.05) {
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  const now = ctx.currentTime
+  const oscillator = ctx.createOscillator()
+  const filter = ctx.createBiquadFilter()
+  const gain = ctx.createGain()
+
+  oscillator.type = 'sawtooth'
+  oscillator.frequency.setValueAtTime(140, now)
+  oscillator.frequency.exponentialRampToValueAtTime(880, now + duration)
+
+  filter.type = 'lowpass'
+  filter.frequency.setValueAtTime(600, now)
+  filter.frequency.exponentialRampToValueAtTime(3200, now + duration)
+
+  gain.gain.setValueAtTime(0.0001, now)
+  gain.gain.exponentialRampToValueAtTime(0.06, now + duration * 0.8)
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration)
+
+  oscillator.connect(filter)
+  filter.connect(gain)
+  gain.connect(ctx.destination)
+
+  oscillator.start(now)
+  oscillator.stop(now + duration + 0.05)
+}
+
+// Tiếng "ting" nhẹ khi nhận điểm / đổi voucher thành công — 2 nốt đi lên.
+export function playRewardSound() {
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  const now = ctx.currentTime
+  ;[880, 1318.5].forEach((freq, i) => {
+    const start = now + i * 0.07
+    const oscillator = ctx.createOscillator()
+    const gain = ctx.createGain()
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(freq, start)
+    gain.gain.setValueAtTime(0.0001, start)
+    gain.gain.exponentialRampToValueAtTime(0.14, start + 0.01)
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28)
+    oscillator.connect(gain)
+    gain.connect(ctx.destination)
+    oscillator.start(start)
+    oscillator.stop(start + 0.3)
+  })
+}
+
 // Chuỗi hợp âm trưởng đi lên (C5-E5-G5-C6) mô phỏng tiếng "thăng hạng" kiểu game —
 // dùng triangle wave (âm sắc sáng hơn sine) để khác hẳn tiếng click thường.
 export function playLevelUpSound() {

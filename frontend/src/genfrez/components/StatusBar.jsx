@@ -20,6 +20,8 @@ export default function StatusBar() {
           <rect x="21.5" y="4" width="1.5" height="4" rx="0.75" fill="currentColor" />
         </svg>
       </span>
+      {/* Thanh tiến độ cuộn — độ dài lấy từ --sp do PhoneFrame ghi ra */}
+      <span className="gf-scroll-progress" aria-hidden="true" />
     </div>
   )
 }

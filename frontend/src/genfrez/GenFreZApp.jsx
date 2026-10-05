@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './genfrez.css'
+import './genfrez-fx.css'
 import PhoneFrame from './components/PhoneFrame'
 import BottomNav from './components/BottomNav'
 import RankUpCelebration from './components/RankUpCelebration'
@@ -41,12 +42,14 @@ export default function GenFreZApp() {
   // để không bung lại mỗi khi score đổi sau khi đã qua ngưỡng (vd: đổi voucher).
   const prevScoreRef = useRef(score)
   const [showRankUp, setShowRankUp] = useState(false)
+  // Trễ ~0.7s để confetti "+điểm" ở nút vừa bấm kịp bung trước khi màn thăng hạng phủ lên.
   useEffect(() => {
     const threshold = initialProfile.tier.nextThreshold
-    if (prevScoreRef.current < threshold && score >= threshold) {
-      setShowRankUp(true)
-    }
+    const crossed = prevScoreRef.current < threshold && score >= threshold
     prevScoreRef.current = score
+    if (!crossed) return undefined
+    const t = setTimeout(() => setShowRankUp(true), 700)
+    return () => clearTimeout(t)
   }, [score])
 
   const addHistory = (entry) => {
@@ -161,12 +164,24 @@ export default function GenFreZApp() {
     }
   }
 
+  // Key của màn đang hiện — PhoneFrame dùng để chạy hiệu ứng chuyển màn và cuộn về đầu.
+  const screenKey = pushedScreen ? `${pushedScreen.type}-${pushedScreen.missionId ?? ''}` : activeTab
+
   return (
-    <PhoneFrame nav={<BottomNav activeTab={pushedScreen ? null : activeTab} onSelect={handleSelectTab} />}>
+    <PhoneFrame
+      screenKey={screenKey}
+      nav={<BottomNav activeTab={pushedScreen ? null : activeTab} onSelect={handleSelectTab} />}
+      overlay={
+        showRankUp && (
+          <RankUpCelebration
+            fromTier={initialProfile.tier.current}
+            tierName={initialProfile.tier.next}
+            onClose={() => setShowRankUp(false)}
+          />
+        )
+      }
+    >
       {screen}
-      {showRankUp && (
-        <RankUpCelebration tierName={initialProfile.tier.next} onClose={() => setShowRankUp(false)} />
-      )}
     </PhoneFrame>
   )
 }
